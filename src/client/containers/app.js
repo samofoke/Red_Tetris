@@ -2,17 +2,26 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 
-const App = ({message}) => {
+const App = (props) => {
   return (
-    <span>{message}</span>
+    <div>
+      I am working fine for now!!
+    </div>
   )
 }
 
-const mapStateToProps = (state) => {
-  return {
-    message: state.message
-  }
-}
-export default connect(mapStateToProps, null)(App)
+export default App
+// const App = ({message}) => {
+//   return (
+//     <span>{message}</span>
+//   )
+// }
+
+// const mapStateToProps = (state) => {
+//   return {
+//     message: state.message
+//   }
+// }
+// export default connect(mapStateToProps, null)(App)
 
 
