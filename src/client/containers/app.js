@@ -1,16 +1,41 @@
-import React from 'react'
-import { connect } from 'react-redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { tetroIntState } from '../actions/pieces.actions.component';
+import tetrodisplay from './displayer.component';
 
+// const App = (props) => {
+//   return (
+//     <div>
+//       I am working fine for now!!
+//     </div>
+//   )
+// }
 
-const App = (props) => {
+// export default App
+
+export const App = (props) => {
   return (
     <div>
-      I am working fine for now!!
+      <span style={{display: "block"}}>Red Tetris</span>
+      <tetroIntState />
     </div>
-  )
+  );
 }
 
-export default App
+const mapStateToProps = (state) => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => {
+  return {}
+};
+
+const reduxApp = connect (
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
+
+export default reduxApp;
 // const App = ({message}) => {
 //   return (
 //     <span>{message}</span>

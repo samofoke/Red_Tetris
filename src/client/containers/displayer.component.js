@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import '../css/display.component.style.css';
+//import '../css/display.component.style.css';
 
 
 const colorBoard = ["gray", "black", "green"];
 
 export const tetroDisplay = (tetroState) => {
     return (
-        <dev className="tetro-diplay">
+        <dev className="tetro-display">
             {tetroState.map((row, index) => {
                 return (
                     <div key={index} className="tetro-row">
@@ -30,6 +30,17 @@ const tetroArray = [];
 
 const mapStateToProps = (state) => {
     return {
-        tetroState: state.
-    }
-}
+        tetroState: state.tetroreducer.tetroState || tetroArray,
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {}
+};
+
+const reduxTetroDisplayer = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(tetroDisplay);
+
+export default reduxTetroDisplayer;

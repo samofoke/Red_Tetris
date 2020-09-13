@@ -1,5 +1,5 @@
-export const TETROINTSET = 'TETROINTSET';
-export const SETSTATETETRO = 'SETSTATETETRO';
+export const TETROINTSET = "TETROINTSET";
+export const SETSTATETETRO = "SETSTATETETRO";
 
 
 export const tetroIntState = () => {

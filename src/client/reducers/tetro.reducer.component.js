@@ -2,20 +2,20 @@ import { TETROINTSET, SETSTATETETRO } from '../actions/pieces.actions.component'
 
 const initialState = new Array(20).fill(new Array(10).fill(0));
 
-const tetroMino = (st = {}, ac) => {
-    switch(ac.type) {
+const tetroMino = (state = {}, action) => {
+    switch(action.type) {
         case TETROINTSET:
             return {
-                ...st,
+                ...state,
                 tetroState: initialState
             }
         case SETSTATETETRO:
             return {
-                ...st,
-                tetroState: ac.newState
+                ...state,
+                tetroState: action.newState
             }
         default:
-            return st;
+            return state;
     }
 }
 
