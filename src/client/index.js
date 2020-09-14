@@ -9,7 +9,9 @@ import reducer from './reducers'
 import App from './containers/app'
 import {alert} from './actions/alert'
 
-const initialState = {}
+const initialState = {
+  message: 'Well everything seems to working fine....'
+}
 
 const store = createStore(
   reducer,
@@ -23,4 +25,4 @@ ReactDom.render((
   </Provider>
 ), document.getElementById('tetris'))
 
-store.dispatch(alert('Soon, will be here a fantastic Tetris ...'))
+//store.dispatch(alert('Soon, will be here a fantastic Tetris ...'))
