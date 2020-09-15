@@ -1,5 +1,7 @@
-export const ping = () => {
+export const P_SERVER = 'P_SERVER';
+
+export const pingServer = () => {
   return {
-    type: 'server/ping'
+    type: P_SERVER
   }
 }

@@ -2,8 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import mycss from './app.css';
 import Uni_Button from '../../components/button.component/button.component';
-import { alert } from '../../actions/alert';
+import { alert } from '../../actions/client.server';
 import { store } from '../../index';
+import { pingServer } from '../../actions/server';
 
 
 const App = ({message}) => {
@@ -28,7 +29,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
   console.log("mapping correctly\n");
   return {
-    onClick: () => {dispatch(alert("Success"))}
+    onClick: () => {dispatch(alert(pingServer))}
   }
 }
 
