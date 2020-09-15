@@ -4,7 +4,9 @@ import { ALERT_POP } from '../actions/client.server';
 import { P_SERVER } from '../actions/server';
 
 const Alert = (state, action) => {
+    console.log("arlet send.!!!");
     return {
+        ...state,
         message: action.message
     }
 }
@@ -13,7 +15,7 @@ const accessServer = (state, action) => {
     return dispatch => {
         setTimeout(() => {
             console.log("ran successfully");
-            dispatch(Alert("pinned perfectly"));
+            dispatch("pinned perfectly");
         }, 1000);
     };
 }

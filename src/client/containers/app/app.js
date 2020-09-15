@@ -29,11 +29,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
   console.log("mapping correctly\n");
   return {
-    onClick: () => {dispatch(alert(pingServer))}
+    onClick: () => {dispatch(pingServer)}
   }
 }
 
 
-export default connect(mapStateToProps, null)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App)
 
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import socket from '../../'
+import socket from '../../socket';
 import button from './button.style.css';
 
 const Button = (props) => {
