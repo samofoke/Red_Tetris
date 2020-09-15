@@ -9,17 +9,19 @@ module.exports = {
   },
 
   module: {
-    rules: [{
+    loaders: [{
       test: /\.js$/,
       exclude: /node_modules/,
-      loader: 'babel-loader',
-      options:{
-        presets: ["@babel/react"]
+      loader: 'babel',
+      query:{
+        presets: ["es2015", "react", "stage-0"]
       },
-    }, {
-        test: /\.css$/,
-        exclude: /node_modules/,
-        loader: 'style-loader!css-loader'
-      }]
+    },{
+      test: /\.css$/,
+      loaders: [
+        'style-loader',
+        'css-loader?importLoader=1&modules&localIdentName=[path]___[name]__[local]___[hash:base64:5]'
+      ]
+    }]
   }
 };
