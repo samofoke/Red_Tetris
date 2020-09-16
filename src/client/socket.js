@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import params from '../../params';
 import store from './index';
-import { alert } from './actions/client.server';
+import { alert, updatePlayerList } from './actions/client.server';
 
 const socket = io.connect(params.server.getUrl());
 
@@ -15,6 +15,13 @@ socket.on('action', (action) => {
 
         store.dispatch(alert("Hi there."))
     }
+})
+
+socket.on('serverInformation', (serverInformation) => {
+    console.log("recieved by the client side", serverInformation);
+
+    //sending tto the redux action.
+    store.dispatch(updatePlayerList(serverInformation));
 })
 
 module.exports = socket;

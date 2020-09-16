@@ -10,10 +10,10 @@ export const alert = (message) => {
 
 export const HOST = 'HOST';
 
-export const hostList = (h) => {
+export const updatePlayerList = (h) => {
   console.log("The host is updated.!!");
   return {
     type: HOST,
-    hostList: hostList
+    h: h
   }
 }

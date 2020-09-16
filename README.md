@@ -232,7 +232,7 @@ bundle.js  754 kB       0  [emitted]  main
     + 197 hidden modules
 
 $  DEBUG=tetris:* node dist/server/main.js 
-  tetris:info tetris listen on http://0.0.0.0:5000 +0ms
+  tetris:info tetris listen on http://0.0.0.0:3004 +0ms
   not yet ready to play tetris with U ...
 ```
 

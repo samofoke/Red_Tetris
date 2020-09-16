@@ -1,6 +1,6 @@
 // import alert from './alert'
 // export default alert
-import { ALERT_POP } from '../actions/client.server';
+import { ALERT_POP, HOST } from '../actions/client.server';
 import { P_SERVER } from '../actions/server';
 
 const Alert = (state, action) => {
@@ -20,11 +20,21 @@ const accessServer = (state, action) => {
     };
 }
 
+const updateplayerlist = (state, action) => {
+    console.log("update player list.");
+    return {
+        ...state,
+        playerlist: action.playerlist
+    }
+}
+
 const reducer = (state = {}, action) => {
     switch(action.type) {
         case ALERT_POP: return Alert(state, action);
         case P_SERVER: return accessServer(state, action);
-        default: return state;
+        //default: return state;
+        case HOST: return updateplayerlist(state, action);
+        default: console.log("didn't work as expected"); return state;
     }
 }
 

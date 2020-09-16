@@ -3,7 +3,7 @@ import list from './listofplayers.style.css';
 import Arena from './arena/arena';
 import socket from '../../socket';
 
-const Playerlist = (props) => {
+const playerlist = (props) => {
 
     let info = <div></div>;
 
@@ -16,8 +16,8 @@ const Playerlist = (props) => {
         });
     }
 
-    if (props.Playerlist) {
-        info = props.Playerlist.map( player => {
+    if (props.playerlist) {
+        info = props.playerlist.map( player => {
             return <Arena 
                 key={player.id} 
                 player={player} 
@@ -34,4 +34,4 @@ const Playerlist = (props) => {
     );
 }
 
-export default Playerlist; 
+export default playerlist; 
