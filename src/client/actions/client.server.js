@@ -8,3 +8,12 @@ export const alert = (message) => {
   }
 }
 
+export const HOST = 'HOST';
+
+export const updatePlayerList = (h) => {
+  console.log("The host is updated.!!");
+  return {
+    type: HOST,
+    h: h
+  }
+}

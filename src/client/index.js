@@ -10,7 +10,9 @@ import App from './containers/app/app'
 import { alert } from './actions/client.server'
 
 const initialState = {
-  message: 'Well everything seems to working fine....'
+  message: 'Well everything seems to working fine....',
+  socket: {},
+  playerlist: []
 }
 
 const store = createStore(
@@ -23,6 +25,8 @@ ReactDom.render((
   <Provider store={store}>
     <App/>
   </Provider>
-), document.getElementById('tetris'))
+), document.getElementById('tetris'));
+
+export default store;
 
 //store.dispatch(alert('Soon, will be here a fantastic Tetris ...'))
