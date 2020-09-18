@@ -3,7 +3,7 @@
 import { ALERT_POP, HOST } from '../actions/client.server';
 import { P_SERVER } from '../actions/server';
 
-const Alert = (state, action) => {
+const alertsmg = (state, action) => {
     console.log("arlet send.!!!");
     return {
         ...state,
@@ -12,6 +12,7 @@ const Alert = (state, action) => {
 }
 
 const accessServer = (state, action) => {
+    console.log("are you running");
     return dispatch => {
         setTimeout(() => {
             console.log("ran successfully");
@@ -30,7 +31,7 @@ const updateplayerlist = (state, action) => {
 
 const reducer = (state = {}, action) => {
     switch(action.type) {
-        case ALERT_POP: return Alert(state, action);
+        case ALERT_POP: return alertsmg(state, action);
         case P_SERVER: return accessServer(state, action);
         //default: return state;
         case HOST: return updateplayerlist(state, action);
