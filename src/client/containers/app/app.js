@@ -7,7 +7,7 @@ import { store } from '../../index';
 import { pingServer } from '../../actions/server';
 
 
-const App = ({message}) => {
+const App = ({message, onClick}) => {
   return (
     <div className={mycss.app}>
       <span>{message}</span>

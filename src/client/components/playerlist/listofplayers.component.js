@@ -34,4 +34,5 @@ const playerlist = (props) => {
     );
 }
 
-export default playerlist; 
+export default playerlist;
+
