@@ -1,10 +1,10 @@
-.game {
+.g {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-.game .center {
+.g .center {
     width: 50%;
     overflow: hidden;
     text-overflow: ellipsis;

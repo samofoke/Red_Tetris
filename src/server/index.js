@@ -1,5 +1,11 @@
-import fs  from 'fs'
-import debug from 'debug'
+import fs  from 'fs';
+import debug from 'debug';
+import Server from './Classes/server';
+import Player from './Classes/Player';
+//import { server } from '../../params';
+
+
+const server = new Server();
 
 const logerror = debug('tetris:error')
   , loginfo = debug('tetris:info')
@@ -30,6 +36,17 @@ const initApp = (app, params, cb) => {
 const initEngine = io => {
   io.on('connection', function(socket){
     loginfo("Socket connected: " + socket.id)
+    //setting up server connections for the player.
+    let serverInformation = server.forOpenConnection();
+    console.log("Server Information: ");
+    console.dir(serverInformation);
+    socket.emit('serverInformation', serverInformation);
+    
+    socket.on('selectGame', (action) => {
+      let p = new Player(action.pName, socket.id);
+      server.forSelectingGame(p, action.playerID);
+    })
+
     socket.on('action', (action) => {
       if(action.type === 'server/ping'){
         socket.emit('action', {type: 'pong'})
