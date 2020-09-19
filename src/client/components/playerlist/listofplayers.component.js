@@ -11,7 +11,7 @@ const playerlist = (props) => {
         console.log("select_game: ", playerID);
 
         socket.emit('selectGame', {
-            playerID: playerID - 1,
+            playerID: playerID,
             pName: 'pName'
         });
     }

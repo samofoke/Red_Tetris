@@ -3,7 +3,7 @@ class Game {
 
     constructor(p) {
         this.g = p;
-        this.id = ++Game.gcnt;
+        this.id = Game.gcnt++;
         this.ifPlayer = false;
         this.players = [p];
     }

@@ -36,6 +36,7 @@ const initApp = (app, params, cb) => {
 const initEngine = io => {
   io.on('connection', function(socket){
     loginfo("Socket connected: " + socket.id)
+    //setting up server connections for the player.
     let serverInformation = server.forOpenConnection();
     console.log("Server Information: ");
     console.dir(serverInformation);
