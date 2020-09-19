@@ -12,7 +12,7 @@ const playerlist = (props) => {
 
         socket.emit('selectGame', {
             playerID: playerID - 1,
-            Name: 'Name'
+            pName: 'pName'
         });
     }
 

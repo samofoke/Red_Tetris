@@ -5,13 +5,16 @@ import Uni_Button from '../../components/button.component/button.component';
 import { alert } from '../../actions/client.server';
 import { store } from '../../index';
 import { pingServer } from '../../actions/server';
-
+import Nav from '../../components/navbar/navbar.component';
+import Main from '../../containers/app/mainControl/mainControl.component';
 
 const App = ({message, onClick}) => {
   return (
     <div className={mycss.app}>
+      <Nav></Nav>
+      <Main></Main>
       <span>{message}</span>
-      <span>Red Tetris</span>
+      <span>testing</span>
       <Uni_Button onClick={() => onClick()}
       >
         Press
@@ -34,6 +37,6 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 
