@@ -95,7 +95,7 @@ class Server {
                 x.players.push(p);        
             }
         }
-        console.log("Number of players in the game", gid, ": ", this.games[gid].players.length);
+        //console.log("Number of players in the game", gid, ": ", this.games[gid].players.length);
     }
 
     //the function to create a new game.
