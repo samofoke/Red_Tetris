@@ -29,7 +29,7 @@ const playerlist = (props) => {
     return (
         <div className={list.plist}>
             {info}
-            <input type='button'/>
+            <input onClick={() => selectGame()} type='button'/>
         </div>
     );
 }

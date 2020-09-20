@@ -31,20 +31,77 @@ class Server {
 
         this.games.forEach( g => {
             if (!g.ifPlaying) {
-                joinGame.push(g.getInformation())
+                if (!g.ifPlaying && g.players.length < Game.mxp) {
+                    joinGame.push(g.getInformation())
+                }
             }
         });
         return joinGame;
     }
 
-    forSelectingGame(p, gid) {
+    //remove player from the room function.
+    removePlayer(player, game) {
         
-        if (!this.games[gid]) {
-            this.games[gid] = new Game(p);
+        if (this.inGame(player, game.id)) {
+            game.players = game.players.filter( p => {
+                let x = (p.playerID != player.playerID)
+                if (x === false) {
+                    console.log("remove player ", player.playerID, " form game ", game.id);
+                }
+                return x;
+            });
+            //remove the game if the is no players
+            if (game.players.length == 0) {
+                console.log("checking for an empty room");
+                this.games = this.games.filter(g => {
+                    let x = (g.id != game.id);
+                    if (x === false) {
+                        console.log("romve game room: ", g.id);
+                    }
+                    return x;
+                });
+                console.log(this.games);
+            }
+        }
+    }
+
+    
+    GamebyID(gid) {
+        return this.games.find(g => g.id == gid);
+    }
+
+    //function checks if you in the game.
+    inGame(p, gid) {
+        let g = this.GamebyID(gid);
+
+        let x = false;
+
+        if (g) {
+            x = g.players.map((p) => p.playerID).includes(p.playerID);
+        }
+        return x;
+    }
+
+
+    forSelectingGame(p, gid) {
+
+        let x = this.GamebyID(gid);
+
+        if (!x) {
+            this.games.push(new Game(p));
         }else {
-            this.games[gid].players.push(p);
+            if (!this.inGame(p, gid)) {
+                this.games.forEach(gm => this.removePlayer(p, gm));
+                x.players.push(p);        
+            }
         }
         console.log("Number of players in the game", gid, ": ", this.games[gid].players.length);
+    }
+
+    //the function to create a new game.
+    createNewGame(p) {
+        this.games.forEach(gm => this.removePlayer(p, gm));
+        this.games.push(new Game(p));
     }
 }
 

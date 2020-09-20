@@ -10,7 +10,7 @@ import App from './containers/app/app'
 import { alert } from './actions/client.server'
 
 const initialState = {
-  message: 'Well everything seems to working fine....',
+  message: 'Well everything seems to be working fine....',
   socket: {},
   playerlist: []
 }

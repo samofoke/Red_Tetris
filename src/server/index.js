@@ -35,21 +35,53 @@ const initApp = (app, params, cb) => {
 
 const initEngine = io => {
   io.on('connection', function(socket){
+
+    socket.join('lobby');
+
     loginfo("Socket connected: " + socket.id)
     //setting up server connections for the player.
     let serverInformation = server.forOpenConnection();
     console.log("Server Information: ");
     console.dir(serverInformation);
-    socket.emit('serverInformation', serverInformation);
+    //socket.emit('serverInformation', serverInformation);
+    io.to('lobby').emit('serverInformation', serverInformation);
     
     socket.on('selectGame', (action) => {
       let p = new Player(action.pName, socket.id);
-      server.forSelectingGame(p, action.playerID);
+      //server.forSelectingGame(p, action.playerID);
+      if (action.playerID != undefined) {
+        server.forSelectingGame(p, action.playerID);
+      }else {
+        server.createNewGame(p);
+      }
+
+      let serverInformation = server.forOpenConnection();
+      io.to('lobby').emit('serverInformation', serverInformation);
     })
 
     socket.on('action', (action) => {
+
+      console.log(action);
+      console.log(action.type);
       if(action.type === 'server/ping'){
         socket.emit('action', {type: 'pong'})
+      }
+    })
+    socket.on('disconnect', function() {
+      console.log(socket.id);
+      let i = {};
+      server.games.find(g => {
+        let ply = g.players.find(p => p.playerID === socket.id);
+        if (ply !== undefined) {
+          i = {ply, g};
+          return true;
+        }
+      })
+      console.log(i);
+      if (i.ply !== undefined) {
+        server.removePlayer(i.ply, i.g);
+        let serverInformation = server.forOpenConnection();
+        io.to('lobby').emit('serverInformation', serverInformation);
       }
     })
   })
