@@ -14,7 +14,34 @@ export const updatePlayerList = (h) => {
   console.log("The host is updated.!!");
   return {
     type: HOST,
-    h: h
+    h
+  }
+}
+
+export const UPDATE_PLAYER = 'UPDATE_PLAYER';
+
+export const updatePlayer = (pn) => {
+  return {
+    type: UPDATE_PLAYER,
+    pn
+  }
+}
+
+export const UPDATE_GAME_SELECTED = 'UPDATE_GAME_SELECTED';
+
+export const updateGameSelected = (puuid) => {
+  return {
+    type: UPDATE_GAME_SELECTED,
+    puuid
+  }
+}
+
+export const UPDATE_JOINED_GAME = 'UPDATE_JOINED_GAME';
+
+export const updateJoinGame = (joinedgame) => {
+  return {
+    type: UPDATE_JOINED_GAME,
+    joinedgame
   }
 }
 

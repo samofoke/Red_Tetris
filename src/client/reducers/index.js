@@ -1,7 +1,8 @@
 // import alert from './alert'
 // export default alert
-import { ALERT_POP, HOST } from '../actions/client.server';
+import { ALERT_POP, HOST, UPDATE_PLAYER, UPDATE_GAME_SELECTED, UPDATE_JOINED_GAME } from '../actions/client.server';
 import { P_SERVER } from '../actions/server';
+import *as NameActions from '../../server/ActionsOntherServer';
 
 const alertsmg = (state, action) => {
     console.log("arlet send.!!!");
