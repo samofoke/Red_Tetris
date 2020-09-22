@@ -12,7 +12,10 @@ import { alert } from './actions/client.server'
 const initialState = {
   message: 'Well everything seems to be working fine....',
   socket: {},
-  playerlist: []
+  playerlist: [],
+  pName: 'Sabata',
+  selectedGame: null,
+  joinedGame: false
 }
 
 const store = createStore(

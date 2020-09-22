@@ -50,7 +50,7 @@ const updateName = (state, action) => {
 const selectUpdatedGame = (state, action) => {
     return {
         ...state,
-        selectedGame: action.playerID
+        selectedGame: action.playerID == state.selectedGame ? null : action.playerID
 
     }
 }
