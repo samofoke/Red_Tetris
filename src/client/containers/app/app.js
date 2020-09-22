@@ -13,12 +13,12 @@ const App = ({message, onClick}) => {
     <div className={mycss.app}>
       <Nav></Nav>
       <Main></Main>
-      <span>{message}</span>
+      {/* /*<span>{message}</span>
       <span>testing</span>
       <Uni_Button onClick={() => onClick()}
       >
         Press
-      </Uni_Button>
+      </Uni_Button> */}
     </div>
   )
 }
@@ -29,14 +29,14 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  console.log("mapping correctly\n");
-  return {
-    onClick: () => {dispatch(pingServer)}
-  }
-}
+// const mapDispatchToProps = dispatch => {
+//   console.log("mapping correctly\n");
+//   return {
+//     onClick: () => {dispatch(pingServer)}
+//   }
+// }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, null)(App);
 
 

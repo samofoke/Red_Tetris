@@ -6,7 +6,7 @@ import * as ActionNames from '../../../server/ActionsOntherServer';
 
 const playerlist = (props) => {
 
-    let info = <div></div>;
+    let info = null;
 
     const joinGame = () => {
         console.log("join Game: ");
@@ -15,7 +15,7 @@ const playerlist = (props) => {
         //     playerID: playerID,
         //     pName: 'pName'
         // });
-        socket.emit(ActionNames.JOIN_GAME, props)
+        socket.emit(ActionNames.JOIN_GAME, props.selectedGame);
     }
 
     const createGame = () => {
