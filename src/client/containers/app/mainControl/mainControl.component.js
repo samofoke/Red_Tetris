@@ -4,7 +4,7 @@ import con from './mainControl.style.css';
 import Player from '../../../components/playerlist/listofplayers.component';
 import Form from '../../../components/form.component/form.component';
 import socket from '../../../socket';
-import { updatePlayer, updateGameSelected } from '../../../actions/client.server';
+import { updatePlayer, updateGameSelected, updateJoinGame } from '../../../actions/client.server';
 
 const mainFunction = (props) => {
 
@@ -39,7 +39,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
 	return {
 		onUpdatePlayer: pName => dispatch(updatePlayer(pName)),
-		onSelectGame: playerID => dispatch(updateGameSelected(playerID))
+        onSelectGame: playerID => dispatch(updateGameSelected(playerID)),
+        onUpdateName: gjoined => dispatch(updateJoinGame(gjoined))
 	}
 }
 

@@ -66,14 +66,31 @@ const initEngine = io => {
     })
     socket.on(ActionNames.JOIN_GAME, (action) => {
       console.log(ActionNames.JOIN_GAME, action);
-      let p = new Player(action.pName, socket.id);
-      if (action.playerID != undefined) {
-        server.forSelectingGame(p, action.playerID);
-      }else {
-        server.createNewGame(p);
-      }
+      //let p = new Player(action.pName, socket.id);
+      // if (action.playerID != undefined) {
+      //   server.forSelectingGame(p, action.playerID);
+      // }else {
+      //   server.createNewGame(p);
+      // }
+      let p = server.stanbyPlayer.get(socket.id);
+      server.forSelectingGame(p, action);
+      server.stanbyPlayer.delete(socket.id);
       let serverInformation = server.forOpenConnection();
       console.log("joined game: ", serverInformation);
+      io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+    })
+
+    socket.on(ActionNames.CREATE_GAME, () => {
+      console.log(ActionNames.CREATE_GAME);
+
+      let p = server.stanbyPlayer.get(socket.id);
+
+      //create a new game
+      server.createNewGame(p);
+
+      //remove a player from the standby
+      server.stanbyPlayer.delete(socket.id);
+      let serverInformation = server.forOpenConnection();
       io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
     })
 
