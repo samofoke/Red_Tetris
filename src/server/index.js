@@ -53,6 +53,10 @@ const initEngine = io => {
     //socket.emit('serverInformation', serverInformation);
     //io.to('lobby').emit('serverInformation', serverInformation);
     
+
+    /*
+    emit when clients updates the user interface.
+    */
     socket.on(ActionNames.NEW_PLAYER, (ply) => {
       console.log("[server/index.js]","Add the player: ", ply, "to the lobby.");
       let p = new Player(ply, socket.id);
@@ -70,16 +74,19 @@ const initEngine = io => {
       // let serverInformation = server.forOpenConnection();
       // io.to('lobby').emit('serverInformation', serverInformation);
     })
-    socket.on(ActionNames.JOIN_GAME, (action) => {
-      console.log("[server/index.js]",ActionNames.JOIN_GAME, action);
+    socket.on(ActionNames.JOIN_GAME, (plyID) => {
+      console.log("[server/index.js]",ActionNames.JOIN_GAME, plyID);
       //let p = new Player(action.pName, socket.id);
       // if (action.playerID != undefined) {
       //   server.forSelectingGame(p, action.playerID);
       // }else {
       //   server.createNewGame(p);
       // }
+
+      //move player to player list.
       let p = server.stanbyPlayer.get(socket.id);
-      server.forSelectingGame(p, action);
+      console.log("got plyer: ", p);
+      server.forSelectingGame(p, plyID);
       server.stanbyPlayer.delete(socket.id);
       //let serverInformation = server.forOpenConnection();
       //console.log("joined game: ", serverInformation);
@@ -105,17 +112,17 @@ const initEngine = io => {
       updatesAllPlayerList();
 
       //emit the event to ALL the connected clients
-      socket.emit(ActionNames.GAME_JOINED);
+      socket.emit(ActionNames.GAME_JOINED, true);
     })
 
-    socket.on('action', (action) => {
+    // socket.on('action', (action) => {
 
-      console.log(action);
-      console.log(action.type);
-      if(action.type === 'server/ping'){
-        socket.emit('action', {type: 'pong'})
-      }
-    })
+    //   console.log(action);
+    //   console.log(action.type);
+    //   if(action.type === 'server/ping'){
+    //     socket.emit('action', {type: 'pong'})
+    //   }
+    // })
     socket.on(ActionNames.DISCONNECT, function() {
       console.log("[server/index.js]",ActionNames.DISCONNECT,socket.id);
       let i = {};
@@ -131,6 +138,16 @@ const initEngine = io => {
         server.removePlayer(i.ply, i.g);
         let serverInformation = server.forOpenConnection();
         io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      }
+    })
+
+    socket.on('action', (action) => {
+
+      console.log(action);
+      console.log(action.type);
+      if(action.type === 'server/ping'){
+        console.log("the socket is responding...");
+        socket.emit('action', {type: 'pong'})
       }
     })
   })

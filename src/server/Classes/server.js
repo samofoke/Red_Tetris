@@ -27,7 +27,7 @@ class Server {
     //get Events on open connection, save the uuid and get number of rooms(state)
     forOpenConnection() {
         
-        console.log("Connection open");
+        console.log("[server.js] Connection open");
         let joinGame = [];
 
         this.games.forEach( g => {
@@ -42,6 +42,7 @@ class Server {
 
     //remove player from the room function.
     removePlayer(player, game) {
+        console.log("[server.js] player romoved...")
         
         if (this.inGame(player, game.id)) {
             game.players = game.players.filter( p => {
@@ -85,7 +86,7 @@ class Server {
 
 
     forSelectingGame(p, gid) {
-        console.log("Select Game");
+        console.log("[server.js] Select Game");
 
         let x = this.GamebyID(gid);
 
@@ -102,6 +103,8 @@ class Server {
 
     //the function to create a new game.
     createNewGame(p) {
+        console.log("[server.js] Create new game");
+        //remove player from other games.
         this.games.forEach(gm => this.removePlayer(p, gm));
         this.games.push(new Game(p));
     }
