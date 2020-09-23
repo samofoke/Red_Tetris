@@ -39,6 +39,7 @@ export const updateGameSelected = (puuid) => {
 export const UPDATE_JOINED_GAME = 'UPDATE_JOINED_GAME';
 
 export const updateJoinGame = (joinedgame) => {
+  console.log("The player has joined the game.");
   return {
     type: UPDATE_JOINED_GAME,
     joinedgame

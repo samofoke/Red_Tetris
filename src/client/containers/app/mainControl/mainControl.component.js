@@ -12,7 +12,16 @@ const mainFunction = (props) => {
 
     if (props.pName === undefined || props.pName.length == 0) {
         conn = (<Form onUpdateName={() => props.onUpdatePlayer} ></Form>)
-    }else {
+    }
+
+    console.log("joinedgame", props.joinedgame);
+
+    if (props.joinedgame) {
+        conn = (
+            <div>Tetro Board</div>
+        )
+    }
+    else {
         conn = (
             <Player>
                 playerlist={props.playerlist}
@@ -32,7 +41,8 @@ const mapStateToProps = (state) => {
     return {
         playerlist: state.playerlist,
         pName: state.pName,
-        selectedGame: state.selectedGame
+        selectedGame: state.selectedGame,
+        joinedgame: state.joinedgame
     }
 }
 

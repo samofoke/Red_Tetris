@@ -3,6 +3,7 @@ import debug from 'debug';
 import Server from './Classes/server';
 import Player from './Classes/Player';
 import * as ActionNames from './ActionsOntherServer';
+import { updatePlayerList } from '../client/actions/client.server';
 //import { server } from '../../params';
 
 
@@ -35,25 +36,30 @@ const initApp = (app, params, cb) => {
 }
 
 const initEngine = io => {
+
+  const updatesAllPlayerList = () => {
+    io.to('lobby').emit(ActionNames.SERVER_INFORMATION, forOpenConnection());
+  }
   io.on(ActionNames.CONNECTION, function(socket){
 
     //socket.join('lobby');
-    console.log(ActionNames.CONNECTION);
+    console.log("[server/index.js]",ActionNames.CONNECTION);
 
     loginfo("Socket connected: " + socket.id)
     //setting up server connections for the player.
-    let serverInformation = server.forOpenConnection();
-    console.log("Server Information: ");
-    console.dir(serverInformation);
+    //let serverInformation = server.forOpenConnection();
+    //console.log("Server Information: ");
+    //console.dir(serverInformation);
     //socket.emit('serverInformation', serverInformation);
     //io.to('lobby').emit('serverInformation', serverInformation);
     
     socket.on(ActionNames.NEW_PLAYER, (ply) => {
-      console.log("Add the player: ", ply, "to the lobby.");
+      console.log("[server/index.js]","Add the player: ", ply, "to the lobby.");
       let p = new Player(ply, socket.id);
       server.stanbyPlayer.set(socket.id, p);
       socket.join('lobby');
-      io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      updatePlayerList();
       //server.forSelectingGame(p, action.playerID);
       // if (action.playerID != undefined) {
       //   server.forSelectingGame(p, action.playerID);
@@ -65,7 +71,7 @@ const initEngine = io => {
       // io.to('lobby').emit('serverInformation', serverInformation);
     })
     socket.on(ActionNames.JOIN_GAME, (action) => {
-      console.log(ActionNames.JOIN_GAME, action);
+      console.log("[server/index.js]",ActionNames.JOIN_GAME, action);
       //let p = new Player(action.pName, socket.id);
       // if (action.playerID != undefined) {
       //   server.forSelectingGame(p, action.playerID);
@@ -75,9 +81,13 @@ const initEngine = io => {
       let p = server.stanbyPlayer.get(socket.id);
       server.forSelectingGame(p, action);
       server.stanbyPlayer.delete(socket.id);
-      let serverInformation = server.forOpenConnection();
-      console.log("joined game: ", serverInformation);
-      io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      //let serverInformation = server.forOpenConnection();
+      //console.log("joined game: ", serverInformation);
+      //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      updatesAllPlayerList();
+
+      //emit the event to ALL the connected clients
+      socket.emit(ActionNames.GAME_JOINED);
     })
 
     socket.on(ActionNames.CREATE_GAME, () => {
@@ -90,8 +100,12 @@ const initEngine = io => {
 
       //remove a player from the standby
       server.stanbyPlayer.delete(socket.id);
-      let serverInformation = server.forOpenConnection();
-      io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      //let serverInformation = server.forOpenConnection();
+      //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      updatesAllPlayerList();
+
+      //emit the event to ALL the connected clients
+      socket.emit(ActionNames.GAME_JOINED);
     })
 
     socket.on('action', (action) => {
@@ -103,7 +117,7 @@ const initEngine = io => {
       }
     })
     socket.on(ActionNames.DISCONNECT, function() {
-      console.log(ActionNames.DISCONNECT,socket.id);
+      console.log("[server/index.js]",ActionNames.DISCONNECT,socket.id);
       let i = {};
       server.games.find(g => {
         let ply = g.players.find(p => p.playerID === socket.id);
