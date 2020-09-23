@@ -13,15 +13,21 @@ const initialState = {
   message: 'Well everything seems to be working fine....',
   socket: {},
   playerlist: [],
-  pName: 'Sabata',
+  pName: '',
   selectedGame: null,
-  joinedGame: false
+  joinedGame: false //True or False
 }
+
+//an enhancer redux dev tool for middleware
+//This will make sure that if the redux extension is not present.
+//the store enhancer added will at least be a function, as opposed to undefined.
+//const anEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
   reducer,
   initialState,
   applyMiddleware(thunk, createLogger())
+  //anEnhancer(applyMiddleware(thunk, createLogger()))
 )
 
 ReactDom.render((

@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import params from '../../params';
 import store from './index';
-import { alert, updatePlayerList } from './actions/client.server';
+import { alert, updatePlayerList, updateJoinGame } from './actions/client.server';
 import * as ActionNames from '../server/ActionsOntherServer';
 
 const socket = io.connect(params.server.getUrl());
@@ -18,13 +18,18 @@ socket.on('action', (action) => {
     }
 })
 
-socket.on(ActionNames.SERVER_INFORMATION, (serverInformation) => {
-    console.log("recieved by the client side", serverInformation);
+socket.on(ActionNames.SERVER_INFORMATION, (playerHost) => {
+    console.log("[socket.js] recieved by the client side: ", playerHost);
 
-    //sending tto the redux action.
-    store.dispatch(updatePlayerList(serverInformation));
+    //sending to the redux action.
+    store.dispatch(updatePlayerList(playerHost));
+})
+
+//the socket to get data about the joined player.
+socket.on(ActionNames.GAME_JOINED, () => {
+    store.dispatch(updateJoinGame(true))
 })
 
 module.exports = socket;
 
-socket.emit(ActionNames.NEW_PLAYER, "Sabata");
+//socket.emit(ActionNames.NEW_PLAYER, "Sabata");
