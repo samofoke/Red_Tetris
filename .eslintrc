@@ -65,7 +65,7 @@
 
     /* Best Practices */
     "accessor-pairs": 0, //Enforces getter/setter pairs in objects
-    "block-scoped-var": 1, // treat var statements as if they were block scoped
+    "block-scoped-var": 1, // treat var statements as if they were block scoped as small change
     "complexity": 0, //specify the maximum cyclomatic complexity allowed in a program
     "consistent-return": 0, //require return statements to either always or never specify values
     "curly": [1, "all"], //specify curly brace conventions for all control statements
