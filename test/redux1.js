@@ -17,7 +17,7 @@ describe('Fake redux test', function(){
         done()
       }
     })
-    store.dispatch(alert(MESSAGE));
+    store.dispatch(alert(MESSAGE))
   });
 
 });
