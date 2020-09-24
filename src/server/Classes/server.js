@@ -12,16 +12,16 @@ class Server {
                 new Player('one', 1)
             )
         )
-        this.games.push(
-            new Game(
-                new Player('two', 2)
-            )
-        )
-        this.games.push(
-            new Game(
-                new Player('three', 3)
-            )
-        )
+        // this.games.push(
+        //     new Game(
+        //         new Player('two', 2)
+        //     )
+        // )
+        // this.games.push(
+        //     new Game(
+        //         new Player('three', 3)
+        //     )
+        // )
     }
 
     //get Events on open connection, save the uuid and get number of rooms(state)
@@ -106,7 +106,10 @@ class Server {
         console.log("[server.js] Create new game");
         //remove player from other games.
         this.games.forEach(gm => this.removePlayer(p, gm));
-        this.games.push(new Game(p));
+        //this.games.push(new Game(p));
+        let g = new Game(p);
+        this.games.push(g);
+        return g;
     }
 }
 

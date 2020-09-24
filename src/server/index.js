@@ -91,6 +91,8 @@ const initEngine = io => {
       //let serverInformation = server.forOpenConnection();
       //console.log("joined game: ", serverInformation);
       //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      socket.leave('lobby');
+      socket.join(plyID);
       updatesAllPlayerList();
 
       //emit the event to ALL the connected clients
@@ -103,12 +105,13 @@ const initEngine = io => {
       let p = server.stanbyPlayer.get(socket.id);
 
       //create a new game
-      server.createNewGame(p);
+      let game = server.createNewGame(p);
 
       //remove a player from the standby
       server.stanbyPlayer.delete(socket.id);
       //let serverInformation = server.forOpenConnection();
       //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
+      socket.join(game.id);
       updatesAllPlayerList();
 
       //emit the event to ALL the connected clients

@@ -26,8 +26,8 @@ socket.on(ActionNames.SERVER_INFORMATION, (playerHost) => {
 })
 
 //the socket to get data about the joined player.
-socket.on(ActionNames.GAME_JOINED, () => {
-    store.dispatch(updateJoinGame(true))
+socket.on(ActionNames.GAME_JOINED, (inGame) => {
+    store.dispatch(updateJoinGame(inGame))
 })
 
 module.exports = socket;
