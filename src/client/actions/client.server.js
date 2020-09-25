@@ -46,3 +46,14 @@ export const updateJoinGame = (joinedgame) => {
   }
 }
 
+export const UPDATE_STATE = 'UPDATE_GAME_STATE'
+
+export const updateState = (blks) => {
+
+	console.log("update the state of the game");
+
+	return {
+		type: UPDATE_STATE,
+		blks
+	}
+}

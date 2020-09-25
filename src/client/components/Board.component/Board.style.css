@@ -1,0 +1,12 @@
+.bord {
+    border: black solid 2px;
+}
+
+.rw {
+    display: flex;
+}
+
+.blks {
+    width: 5vw;
+    height: 5vw;
+}
