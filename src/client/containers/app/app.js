@@ -3,14 +3,27 @@ import { connect } from 'react-redux';
 import mycss from './app.css';
 import Uni_Button from '../../components/button.component/button.component';
 import { alert } from '../../actions/client.server';
-import { store } from '../../index';
+//import { store } from '../../index';
 import { pingServer } from '../../actions/server';
 import Nav from '../../components/navbar/navbar.component';
 import Main from '../../containers/app/mainControl/mainControl.component';
+import * as ActionNames from '../../../server/ActionsOntherServer';
+import {socket} from '../../socket';
 
-const App = ({message, onClick}) => {
+const App = (props) => {
+
+  const keyboardEvent = (event) => {
+
+    if (props.joinedGame) {
+      if (event.keyCode == 37) {
+        socket.emit(ActionNames.GAME_ACTION, "left")
+      }
+    }else {
+      console.log("left is not working.")
+    }
+  }
   return (
-    <div className={mycss.app}>
+    <div className={mycss.app} tabIndex="0" onKeyDown={keyboardEvent}>
       <Nav></Nav>
       <Main></Main>
       {/* /*<span>{message}</span>
@@ -25,7 +38,8 @@ const App = ({message, onClick}) => {
 
 const mapStateToProps = (state) => {
   return {
-    message: state.message
+    message: state.message,
+    joinedGame: state.joinedGame
   }
 }
 

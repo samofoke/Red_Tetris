@@ -20,6 +20,7 @@ class BoardGame {
         this.actps = null;
         this.plst = res.plst;
         this.gcallback = res.gcallback;
+        this.pcp = res.pcp;
     }
 
     //function to add pieces
@@ -28,19 +29,23 @@ class BoardGame {
         if (!p || p.constructor !== Array || !(p[0] instanceof Piece)) {
             return;
         }
+        console.log(p);
         this.plst.push(p);
+        this.plst(...p);
+        console.log(this.plst);
     }
 
     //sets the next peice from the list of pieces
 
     nextPiece() {
         console.log("[board.js] set the next piece");
+        this.gcallback(this);
         this.actps = this.plst.shift();
         if (!this.actps){
             console.log("[board.js] error: no next piece");
-        }else {
+        }/*else {
             this.gcallback(this);
-        }
+        }*/
     }
 
     

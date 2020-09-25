@@ -8,5 +8,34 @@
 
 .blks {
     width: 5vw;
-    height: 5vw;
+    height: 5vh;
+    border: solid 1px #aeaeae;
+}
+
+.l1 {
+    background: cyan;
+}
+
+.l2 {
+    background: blue;
+}
+
+.l3 {
+    background: orange;
+}
+
+.l4 {
+    background: yellow;
+}
+
+.l5 {
+    background: green;
+}
+
+.l6 {
+    background: purple;
+}
+
+.l7 {
+    background: red;
 }

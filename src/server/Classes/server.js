@@ -82,6 +82,7 @@ class Server {
         if (g) {
             x = g.players.map((p) => p.playerID).includes(p.playerID);
             console.log("player is: ", x);
+            //console.log("player is: ", g);
         }
         return x;
     }

@@ -10,6 +10,10 @@ import { updatePlayer, updateGameSelected, updateJoinGame } from '../../../actio
 
 const mainFunction = (props) => {
 
+    const test = (event) => {
+        console.log("==================", event);
+    }
+
     let conn;
 
     if (props.pName === undefined || props.pName.length == 0) {
@@ -20,9 +24,10 @@ const mainFunction = (props) => {
 
     if (props.joinedgame) {
         conn = (
-            <div>
-                <BdGame gameState={props.gameState}/>
-            </div>
+            // <div>
+            //     <BdGame gameState={props.gameState}/>
+            // </div>
+            <BdGame gameState={props.gameState}/>
         )
     }
     else {
