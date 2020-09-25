@@ -6,6 +6,7 @@ class Server {
     constructor() {
         this.games = [];
         this.stanbyPlayer = new Map();
+        this.sockets = new Map();
 
         this.games.push(
             new Game(
@@ -80,6 +81,7 @@ class Server {
 
         if (g) {
             x = g.players.map((p) => p.playerID).includes(p.playerID);
+            console.log("player is: ", x);
         }
         return x;
     }
@@ -109,6 +111,7 @@ class Server {
         //this.games.push(new Game(p));
         let g = new Game(p);
         this.games.push(g);
+        g.Launch();
         return g;
     }
 }

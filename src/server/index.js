@@ -40,12 +40,26 @@ const initEngine = io => {
   const updatesAllPlayerList = () => {
     io.to('lobby').emit(ActionNames.SERVER_INFORMATION, forOpenConnection());
   }
+
+  //sending the game state
+  const updateState = (player) => {
+    console.log("[index.js] updating the game state.");
+    let socket = server.sockets.get(player.playerID);
+    socket.emit(ActionNames.UPDATE_STATE, player.bord.getblocks())
+  }
+
+  const shadowUpdate = () => {
+
+  }
+
+
   io.on(ActionNames.CONNECTION, function(socket){
 
     //socket.join('lobby');
     console.log("[server/index.js]",ActionNames.CONNECTION);
 
     loginfo("Socket connected: " + socket.id)
+    server.sockets.set(socket.id, socket);
     //setting up server connections for the player.
     //let serverInformation = server.forOpenConnection();
     //console.log("Server Information: ");
@@ -116,6 +130,7 @@ const initEngine = io => {
 
       //emit the event to ALL the connected clients
       socket.emit(ActionNames.GAME_JOINED, true);
+      updateState(p);
     })
 
     // socket.on('action', (action) => {

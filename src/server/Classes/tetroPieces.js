@@ -48,7 +48,7 @@ class Piece {
 		let defaultLen = {
 			shapenbr: 0,
 			act: 0,
-			crd = {x: 3, y: 0}
+			crd: {x: 3, y: 0}
 		};
 		len = {...defaultLen, ...len, crd: {...(len.crd ? len.crd : defaultLen.crd)}};
 
@@ -275,8 +275,8 @@ Piece.sevenShapes = [
 	],
 ];
 
-module.exports = {
-	Piece: Piece
-}
+// module.exports = {
+// 	Piece: Piece
+// }
 
-//export default Piece;
+export default Piece;

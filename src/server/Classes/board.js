@@ -1,5 +1,5 @@
-//import the tetro pieces
-var Piece = require('./tetroPieces').Piece;
+import Piece from './tetroPieces';
+//var Piece = require('./tetroPieces').Piece;
 
 class BoardGame {
 
@@ -215,7 +215,10 @@ class BoardGame {
     }
 
     getblocks() {
-        let cs = JSON.parse(JSON.stringify(cs));
+        let cs = JSON.parse(JSON.stringify(this.cs));
+        if (!this.actps) {
+            return cs;
+        }
         for (let y = 0; y < 4; y++) {
             for (let x = 0; x < 4; x++) {
                 if (this.actps.cs[y][x] != 0x0) {
@@ -225,25 +228,38 @@ class BoardGame {
         }
         return cs;
     }
+
+    getshadowblocks() {
+        let shw = JSON.parse(JSON.stringify(this.cs));
+        for (let y = 0; y < 4; y++) {
+            for (let x = 0; x < 4; x++) {
+                if (this.actps.cs[y][x] != 0x0) {
+                    for (let z = this.actps.crd.y + y; z < this.bord.size.y; z++) {
+                        shw[z][this.actps.crd.x + x] = 0x8b8b8b;
+                    }
+                }
+            }
+        }
+    }
 }
 
 
 
 
 
-let bord = new BoardGame(
-    {
-        size: {x: 10, y : 20},
-        plst: [new Piece(0)]
-    }
-);
+// let bord = new BoardGame(
+//     {
+//         size: {x: 10, y : 20},
+//         plst: [new Piece(0)]
+//     }
+// );
 
-bord.nextPiece();
-console.log(bord.getblocks());
+// bord.nextPiece();
+// console.log(bord.getblocks());
 //console.log("bord: ", bord);
 
 // let ps = new Piece(1);
 // bord.addpiece(ps);
 // console.log("bord: ", bord);
 
-//export default BoardGame;
+export default BoardGame;

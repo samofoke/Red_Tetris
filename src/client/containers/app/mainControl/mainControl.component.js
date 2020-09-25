@@ -3,8 +3,10 @@ import { connect } from 'react-redux';
 import con from './mainControl.style.css';
 import Player from '../../../components/playerlist/listofplayers.component';
 import Form from '../../../components/form.component/form.component';
+import BdGame from '../../../components/Board.component/Board.component';
 import socket from '../../../socket';
 import { updatePlayer, updateGameSelected, updateJoinGame } from '../../../actions/client.server';
+
 
 const mainFunction = (props) => {
 
@@ -18,7 +20,9 @@ const mainFunction = (props) => {
 
     if (props.joinedgame) {
         conn = (
-            <div>Tetro Board</div>
+            <div>
+                <BdGame gameState={props.gameState}/>
+            </div>
         )
     }
     else {
@@ -42,7 +46,8 @@ const mapStateToProps = (state) => {
         playerlist: state.playerlist,
         pName: state.pName,
         selectedGame: state.selectedGame,
-        joinedgame: state.joinedgame
+        joinedgame: state.joinedgame,
+        gameState: state.gameState
     }
 }
 

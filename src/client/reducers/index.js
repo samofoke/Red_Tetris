@@ -1,6 +1,6 @@
 // import alert from './alert'
 // export default alert
-import { ALERT_POP, HOST, UPDATE_PLAYER, UPDATE_GAME_SELECTED, UPDATE_JOINED_GAME } from '../actions/client.server';
+import { ALERT_POP, HOST, UPDATE_PLAYER, UPDATE_GAME_SELECTED, UPDATE_JOINED_GAME, UPDATE_STATE } from '../actions/client.server';
 import { P_SERVER } from '../actions/server';
 import socket from '../socket';
 import *as NameActions from '../../server/ActionsOntherServer';
@@ -63,6 +63,13 @@ const updatedJoinedGame = (state, action) => {
     }
 }
 
+const updateState = (state, action) => {
+	return {
+		...state,
+		gameState: action.cls
+	}
+}
+
 const reducer = (state = {}, action) => {
     switch(action.type) {
         case ALERT_POP: return alertsmg(state, action);
@@ -72,6 +79,7 @@ const reducer = (state = {}, action) => {
         case UPDATE_PLAYER: return updateName(state, action);
         case UPDATE_GAME_SELECTED: return selectUpdatedGame(state, action);
         case UPDATE_JOINED_GAME: return updatedJoinedGame(state, action);
+        case UPDATE_STATE: return updateState(state, action);
         default: console.log("didn't work as expected"); return state;
     }
 }
