@@ -1,71 +1,120 @@
 import Piece from './tetroPieces';
-import BoardGame from './board';
+import Board from './board';
 
 class Game {
-    static gcnt = 0;
-    static mxp = 4;
-    static npcnt = 10;
+	static gameCount = 0;
+	static maxPlayers = 4;
+	static newPiecesCount = 10;
 
-    constructor(p) {
-        this.id = Game.gcnt++;
-        this.g = p;
-        this.ifPlayer = false;
-        this.players = [p];
-        this.plist = [];
-    }
+	constructor( player, gameID ) {
+		this.id = Game.gameCount++;
+		this.host = player;
+		this.isPlaying = false;
+		this.players = [player];
+		this.piecesList = [];
+		this.level = 0;
+		this.highestScore = 0;
+		this.interval = undefined;
+		if (gameID) {
+			this.id = gameID;
+		}
+		this.playersLostList = [];
+	}
 
-    getInformation() {
-        return {
-            id: this.id,
-            playerName: this.g.name,
-            plcnt: this.players.length
-        };
-    }
+	getInfo() {
+		return {
+			id: this.id,
+			hostName: this.host.name,
+			playerCount: this.players.length
+		};
+	}
 
-    Launch() {
-        this.players.forEach(p => this.TheGame(p));
-    }
+	init() {
+		this.addPieces();
+	}
 
-    TheGame(ply) {
-        ply.bord = new BoardGame({
-            gcallback: (bord) => {
-                if (bord.pcp - this.plist.length < 5) {
-                    this.plist.push(Piece.randomNumberPieces(Game.npcnt)); 
-                }
-                if (bord.plist.length < 5) {
-                    this.plist.slice(bord.pcp, bord.pcp + 5).map(ps => {
-                        return new Piece(ps);
-                    });
-                };
-                bord.pcp += 5;
-            }
-        });
-    }
-    //{
+	initPlayerBoard( player ) {
+		if (!player) return ;
 
-    //     this.addpiece();
-    //     //create a board for each player
-    //     this.players.forEach(ps => {
-    //         ps.bord = new BoardGame({
-    //             gcallback: (bord) => {
-    //                 if (bord.pcp - this.plist.length < 5) {
-    //                     this.plist.push(Piece.randomNumberPieces, bord.pcp + 5).map(ps => {
-    //                         return new Piece(ps);
-    //                     });
-    //                 };
-    //                 bord.pcp += 5;
-    //             }
-    //         });
-    //     });
-    // }
+		player.board = new Board({
+			getPiecesFromGame: (board) => {
+				if (board.piecesCopiedCount - this.piecesList.length < 5) {
+					this.piecesList.push(...Piece.generateRandomPieces(Game.newPiecesCount));
+				}
+				if (board.piecesList.length < 5) {
+					board.addPieces(this.piecesList.slice(board.piecesCopiedCount, board.piecesCopiedCount + 5).map( piece => new Piece(piece) ));
+					board.piecesCopiedCount += 5;
+				}
+			},
+			updateScoreAndFrozenLinesInGame: (linesRemoved) => {
+				const multiplier = [40, 100, 250, 600];
+				player.score += multiplier[linesRemoved - 1] * (this.level + 1);
+				this.updateGameLevel(player.score);
 
-    startGame() {
+				if (linesRemoved >= 2) {
+					this.players.forEach((p) => {
+						if (player.socketID != p.socketID) {
+							p.board.frozenLines += linesRemoved - 1;
+						}
+					})
+				}
+			},
+			checkForEndGame: () => {
+				if (this.players.every( p => p.board.gameOver)) {
+					player.isWinner = true;
+				}
+			}
+		});
+	}
 
-    }
+	reset() {
+		this.players.forEach(player => {
+			player.reset();
+			player.board.reset();
+		})
+		this.piecesList = [];
+		this.level = 0;
+		this.highestScore = 0;
+		this.playersLostList = [];
 
-    addpiece() {
-        this.plist.push(Piece.randomNumberPieces(Game.npcnt));
-    }
+	}
+
+	setGameTic() {
+		let ticTime = 1000 / Math.log2(this.level + 2);
+
+		if (this.interval != undefined) {
+			clearInterval(this.interval);
+		}
+		this.interval = setInterval(this.ticFunction, ticTime);
+	}
+
+	updateGameLevel(playerScore) {
+		const thresholds = [600, 1800, 3600, 6000, 9000, 12600, 16800, 21600, 27000, 33000];
+		if (playerScore > this.highestScore) {
+			this.highestScore = playerScore;
+			if (this.highestScore > thresholds[this.level] && this.level < thresholds.length - 1) {
+				while (this.highestScore > thresholds[this.level] && this.level < thresholds.length - 1) {
+					this.level++;
+				}
+				this.setGameTic();
+			}
+		}
+	}
+
+	setInvisibleMode(invisibleMode) {
+		this.players.forEach(player => {
+			player.board.setInvisibleMode(invisibleMode);
+		})
+	}
+
+	start () {
+		this.isPlaying = true;
+	}
+
+	addPieces() {
+		this.piecesList.push(...Piece.generateRandomPieces(Game.newPiecesCount));
+	}
+
 }
 
-export default Game;
+export default Game

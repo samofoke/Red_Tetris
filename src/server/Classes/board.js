@@ -1,270 +1,322 @@
-import Piece from './tetroPieces';
-//var Piece = require('./tetroPieces').Piece;
+import Piece from './tetroPieces'
 
-class BoardGame {
+class Board {
+	
+	constructor( params ) {
+		let defaultParams = {
+			size: {x: 10, y : 20},
+			piecesList: [],
+			piecesCopiedCount: 0,
+			gameOver: false,
+			needToBroadcast: false,
+			frozenLines: 0,
+			removedLines: 0,
+			savedPiece: null,
+			invisibleMode: false,
+			getPiecesFromGame: () => {},
+			updateScoreAndFrozenLinesInGame: () => {},
+			checkForEndGame: () => {}
 
-    constructor(res) {
-        let defaultBoard = {
-            size: {x: 10, y : 20},
-            plst: [],
-            pcp: 0,
-            gcallback: () => {console.log("no call back yet...")}
-        }
-        res = {...defaultBoard, ...res};
-        this.size = res.size;
-        this.cs = new Array(this.size.y);
-        //looping through the cordinates
-        for (let index = 0; index < this.size.y; index++) {
-            this.cs[index] = new Array(this.size.x).fill(0x0);
-        }
-        this.actps = null;
-        this.plst = res.plst;
-        this.gcallback = res.gcallback;
-        this.pcp = res.pcp;
-    }
+		}
+		params = {...defaultParams, ...params};
+		this.size = params.size;
+		this.cells = new Array(this.size.y);
+		for (let y = 0; y < this.size.y; y++) {
+			this.cells[y] = new Array(this.size.x).fill(0x0);
+		}
+		this.activePiece = null;
+		this.savedPiece = null;
+		this.piecesList = params.piecesList;
+		this.piecesCopiedCount = params.piecesCopiedCount;
+		this.gameOver = params.gameOver;
+		this.needToBroadcast = params.needToBroadcast;
+		this.frozenLines = params.frozenLines;
+		this.removedLines = params.removedLines;
+		this.invisibleMode = params.invisibleMode;
+		this.getPiecesFromGame = params.getPiecesFromGame;
+		this.updateScoreAndFrozenLinesInGame = params.updateScoreAndFrozenLinesInGame;
+		this.checkForEndGame = params.checkForEndGame;
+	}
 
-    //function to add pieces
-    addpiece(p) {
-        console.log("[board.js] added pieces");
-        if (!p || p.constructor !== Array || !(p[0] instanceof Piece)) {
-            return;
-        }
-        console.log(p);
-        this.plst.push(p);
-        this.plst(...p);
-        console.log(this.plst);
-    }
+	/*
+	*	Add pieces to piecesList
+	*/
+	addPieces( pieces ) {
+		if (!pieces || pieces.constructor !== Array || !(pieces[0] instanceof Piece))
+			return ;
+		this.piecesList.push(...pieces);
+	}
 
-    //sets the next peice from the list of pieces
+	/*
+	*	Sets the next piece from piecesList as the activePiece
+	*/
+	setNextActivePiece() {
+		this.getPiecesFromGame(this);
+		this.activePiece = this.piecesList.shift();
 
-    nextPiece() {
-        console.log("[board.js] set the next piece");
-        this.gcallback(this);
-        this.actps = this.plst.shift();
-        if (!this.actps){
-            console.log("[board.js] error: no next piece");
-        }/*else {
-            this.gcallback(this);
-        }*/
-    }
+		if (!this.activePiece) return;
 
-    
+		let isPlaceable = this.pieceIsPlaceable(this.activePiece);
+		if (!isPlaceable) {
+			let movedPiece = new Piece(this.activePiece);
+			movedPiece.move({x: 0, y: -1});
+			this.activePiece = movedPiece;
+			this.gameOver = true;
+			this.fillRed();
+			this.checkForEndGame();
+		} else {
+			this.needToBroadcast = true;
+		}
+	}
 
-    //the tries to check rotate the piece
-    checkrotate(ps) {
-        console.log("[board.js] checks for rotate");
-        if (!ps) {
-            console.log("\t to piece");
-            return;
-        }
-        //checks collision on the board and tries to rotate
-        //let rot = new Piece(ps);
-        ps.rotate();
-        console.log("the piece rotates", ps);
-        // let place = this.overlap(rot);
-        // console.log("can place a piece");
-        // if (place) {
-        //     this.actps = rot;
-        //     return rot;
-        // }else {
-        //     rot = this.checksmoves(rot);
-        // }
-        // return ps;
-        return this.overlap(ps);
-    }
+	/*
+	*	Tries to rotate a piece or the activePiece. Returns piece (rotated or not).
+	*	If a rotatedPiece cannot be placed, try to place it up to 2 squares left,
+	*		2 squares right, or two squares up, in that order.
+	*	Does not rotate on failure.
+	*/
+	tryToRotatePiece( piece ) {
+		if (!piece) return ;
+		piece.rotate();
+		return this.pieceIsPlaceable(piece);
+	}
 
-    //the checks for moves and moves a piece and active pieces
+	/*
+	*	Tries to move a piece or the activePiece. Returns piece (moved or not).
+	*/
+	tryToMovePiece( piece, vector ) {
+		if (!piece) return ;
+		if (!vector || vector.x == undefined || vector.y == undefined) return piece ;
 
-    checksmoves(pms, v) {
-        console.log("[board.js] moves a piece, v", v);
-        if (!pms) {
-            console.log("\t to piece");
-            return;
-        }
-        if (!v || v.x == undefined || v.y == undefined) {
-            console.log("\t invalid move");
-            return pms;
-        }
-        //let m = new Piece(pms);
-        pms.updateCordinates(v);
-        // let place = this.overlap(m);
-        // console.log("can move a piece", place);
-        // if (place) {
-        //     if (this.actps == pms) {
-        //         this.actps = m;
-        //     }
-        // }
-        return this.overlap(pms); 
-    }
+		piece.move(vector);
+		return this.pieceIsPlaceable(piece);
+	}
 
-    //the function for valid pieces on the board
+	/*
+	*	Checks if the piece or activePiece can exist on this board
+	*/
+	pieceIsPlaceable( piece ) {
+		if (!piece) return false;
+		for (let y = 0; y < 4; y++) {
+			for (let x = 0; x < 4; x++) {
+				if (piece.cells[y][x] != 0x0) {
+					// if non-null piece cell outside of board
+					if (piece.coords.x + x >= this.size.x || piece.coords.x + x < 0 || piece.coords.y + y >= this.size.y - this.frozenLines || piece.coords.y + y < 0) {
+						return false;
+					}
+					// if non-null piece cell on a non-null board cell
+					else if (this.cells[piece.coords.y + y][piece.coords.x + x] != 0x0 && piece.cells[y][x] != 0x0) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
-    overlap(psx = this.actps) {
-        console.log("[board.js] overlaping pieces");
-        if (!psx) {
-            return false;
-        }
-        for (let y = 0; y < 4; y++) {
-            for (let x = 0; x < 4; x++) {
-                if (psx.cs[y][x] != 0x0) {
-                    //if the piece is null outside the board
-                    if (psx.crd.x + x >= this.size.x || psx.crd.x + x < 0 || psx.coords.y + y >= this.size.y || psx.crd.y + y < 0) {
-						console.log("[board.js] piece out of scope. crd: ", {x: psx.crd.x + x, y: psx.crd.y + y});
-                        return false;
-                    }
-                    //if non-null piece is on a null board
-                    else if (this.cs[psx.crd.y + y][psx.crd.x + x] != 0x0 && psx.cs[y][x] != 0x0) {
-                        console.log("[board.js] a piece overlaps at: ", {x: psx.crd.x + x, y: psx.crd.y + y}, ", piece", psx.cs[y][x], "board: ", this.cs[psx.crd.y + y][psx.crd.x + x]);
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
+	/*
+	*	Copies piece's or activePiece's colors to board, regardless of colors onboard
+	*/
+	freezePiece( piece = this.activePiece ) {
+		if (!piece) return ;
+		for (let y = 0; y < 4; y++) {
+			for (let x = 0; x < 4; x++) {
+				if (piece.cells[y][x] != 0x0 && piece.coords.y >= 0) {
+					if (this.invisibleMode) {
+						this.cells[piece.coords.y + y][piece.coords.x + x] = 'invisible';
+					} else {
+						this.cells[piece.coords.y + y][piece.coords.x + x] = piece.cells[y][x];
+					}
+				}
+			}
+		}
+		this.needToBroadcast = true;
+	}
 
+	rotate() {
+		if (!this.activePiece) return ;
 
-    //the functions calls a new piece once a piece gets to the floor
-    putinPlace(p = this.actps) {
-        console.log("[board.js] put a piece in place");
-        if (!p) {
-            return;
-        }
-        for (let y = 0; y < 4; y++){
-            for (let x = 0; x < 4; x++) {
-                if (p.cs[y][x] != 0x0) {
-                    this.cs[y][x] = p.cs[y][x];
-                }
-            }
-        }
-    }
+		let rotatedPiece = new Piece(this.activePiece);
+		let canPlace = this.tryToRotatePiece(rotatedPiece);
+		if (!canPlace) canPlace = this.tryToMovePiece(rotatedPiece, {x: -1, y: 0});
+		if (!canPlace) canPlace = this.tryToMovePiece(rotatedPiece, {x: -1, y: 0});
+		if (!canPlace) canPlace = this.tryToMovePiece(rotatedPiece, {x: 3, y: 0});
+		if (!canPlace) canPlace = this.tryToMovePiece(rotatedPiece, {x: 1, y: 0});
+		if (!canPlace) canPlace = this.tryToMovePiece(rotatedPiece, {x: -2, y: -1});
+		if (!canPlace) canPlace = this.tryToMovePiece(rotatedPiece, {x: 0, y: -1});
+		if (canPlace) this.activePiece = rotatedPiece;
+		return canPlace;
+	}
 
-    printcs() {
-        console.log("[board.js] print piece cells");
-        for (let y = 0; y < this.size.y; y++) {
-            let l = "";
-            for (let x = 0; x < this.size.x; x++) {
-                l += (this.cs[y][x] ? "1" : "0") + " ";
-            }
-            console.log(l);
-        }
-    }
+	moveLeft() {
+		if (!this.activePiece) return ;
 
-    moveRight() {
-        if (!this.actps) {
-            return ;
-        }
-        let mv = new Piece(this.actps);
-        let cm = this.checksmoves(mv, {x: 1, y: 0});
-        if (cm) {
-            this.actps = mv;
-        }
-    }
-    moveLeft() {
-        if (!this.actps) {
-            return ;
-        }
-        let mv = new Piece(this.actps);
-        let cm = this.checksmoves(mv, {x: -1, y: 0});
-        if (cm) {
-            this.actps = mv;
-        }
+		let movedPiece = new Piece(this.activePiece);
+		let canMove = this.tryToMovePiece(movedPiece, {x: -1, y: 0});
+		if (canMove) {
+			this.activePiece = movedPiece;
+		}
+		return canMove;
+	}
 
-    }
-    moveDown() {
-        if (!this.actps) {
-            return ;
-        }
-        let mv = new Piece(this.actps);
-        let cm = this.checksmoves(mv, {x: 0, y: 1});
-        if (cm) {
-            this.actps = mv;
-        }
+	moveRight() {
+		if (!this.activePiece) return ;
 
-    }
-    rotate() {
-        console.log("[board.js] rotate piece");
-        if (!this.actps) {
-            return ;
-        }
-        let rotps = new Piece(this.actps);
-        let cpls = this.checkrotate(rotps);
-        if (!cpls) {
-            console.log("\t move left 1");
-            cpls = this.checksmoves(rotps, {x: -1, y: 0});
-        }
-        if (!cpls) {
-            console.log("\t move left 2");
-            cpls = this.checksmoves(rotps, {x: -1, y: 0});
-        }
-        if (!cpls) {
-            console.log("\t move right 1");
-            cpls = this.checksmoves(rotps, {x: 3, y: 0});
-        }
-        if (!cpls) {
-            console.log("\t move right 2");
-            cpls = this.checksmoves(rotps, {x: 1, y: 0});
-        }
-        if (!cpls) {
-            console.log("\t move up 1");
-            cpls = this.checksmoves(rotps, {x: -2, y: 0});
-        }
-        if (!cpls) {
-            console.log("\t move up 2");
-            cpls = this.checksmoves(rotps, {x: 0, y: 1});
-        }
-        if (cpls) {
-            console.log("\t The rotate");
-            this.actps = rotps;
-        }
-    }
+		let movedPiece = new Piece(this.activePiece);
+		let canMove = this.tryToMovePiece(movedPiece, {x: 1, y: 0});
+		if (canMove) {
+			this.activePiece = movedPiece;
+		}
+		return canMove;
+	}
 
-    getblocks() {
-        let cs = JSON.parse(JSON.stringify(this.cs));
-        if (!this.actps) {
-            return cs;
-        }
-        for (let y = 0; y < 4; y++) {
-            for (let x = 0; x < 4; x++) {
-                if (this.actps.cs[y][x] != 0x0) {
-                    cs[this.actps.crd.y + y][this.actps.crd.x + x] = this.actps.cs[y][x];
-                }
-            }
-        }
-        return cs;
-    }
+	moveDown() {
+		if (!this.activePiece) return ;
 
-    getshadowblocks() {
-        let shw = JSON.parse(JSON.stringify(this.cs));
-        for (let y = 0; y < 4; y++) {
-            for (let x = 0; x < 4; x++) {
-                if (this.actps.cs[y][x] != 0x0) {
-                    for (let z = this.actps.crd.y + y; z < this.bord.size.y; z++) {
-                        shw[z][this.actps.crd.x + x] = 0x8b8b8b;
-                    }
-                }
-            }
-        }
-    }
+		let movedPiece = new Piece(this.activePiece);
+		let canMove = this.tryToMovePiece(movedPiece, {x: 0, y: 1});
+		if (canMove) {
+			this.activePiece = movedPiece;
+		}
+		return canMove;
+	}
+
+	downShortcut() {
+		if (!this.activePiece) return ;
+
+		let canMove = false;
+		for (let y = 0; y < this.size.y; y++) {
+			let movedPiece = new Piece(this.activePiece);
+			canMove = this.tryToMovePiece(movedPiece, {x: 0, y});
+			if (!canMove && y > 0) {
+				movedPiece = new Piece(this.activePiece);
+				canMove = this.tryToMovePiece(movedPiece, {x: 0, y: y - 1});
+				this.activePiece = movedPiece;
+				this.freezePiece(this.activePiece);
+				this.removeFullLine();
+				this.setNextActivePiece();
+				break;
+			}
+		}
+		return canMove;
+	}
+
+	savePiece() {
+		if (!this.activePiece) return ;
+
+		if (this.savedPiece) {
+			this.savedPiece.coords = {x: this.activePiece.coords.x, y: this.activePiece.coords.y};
+			if (!this.pieceIsPlaceable(this.savedPiece)) return ;
+
+			let oldActivePiece = new Piece(this.activePiece);
+			this.activePiece = this.savedPiece;
+			this.savedPiece = oldActivePiece;
+		} else {
+			this.savedPiece = this.activePiece;
+			this.setNextActivePiece();
+		}
+	}
+
+	removeFullLine() {
+		if (this.gameOver) return;
+		let numLinesRemoved = 0;
+		for (let y = 0; y < this.size.y; y++) {
+			let isFullLine = true;
+			for (let x = 0; x < this.size.x; x++) {
+				if (this.cells[y][x] == 0x0) {
+					isFullLine = false;
+				}
+			}
+			if (isFullLine) {
+				numLinesRemoved++;
+				for (let z = y; z > 0; z--) {
+					this.cells[z] = this.cells[z - 1].slice();
+				}
+				this.freezeLine = true;
+			}
+		}
+		if (numLinesRemoved > 0) {
+			this.removedLines += numLinesRemoved;
+			this.updateScoreAndFrozenLinesInGame(numLinesRemoved);
+		}
+	}
+
+	getCells() {
+		let cells = JSON.parse(JSON.stringify(this.cells));
+		if (!this.activePiece) return cells;
+		let canMove = false;
+		for (let y = 0; y < this.size.y; y++) {
+			let movedPiece = new Piece(this.activePiece);
+			canMove = this.tryToMovePiece(movedPiece, {x: 0, y});
+			if (!canMove && y > 0) {
+				movedPiece = new Piece(this.activePiece);
+				canMove = this.tryToMovePiece(movedPiece, {x: 0, y: y - 1});
+				for (let y = 0; y < 4; y++) {
+					for (let x = 0; x < 4; x++) {
+						if (movedPiece.coords.y + y >= 0 && movedPiece.cells[y][x] != 0x0) {
+							cells[movedPiece.coords.y + y][movedPiece.coords.x + x] = 'previewPiece';
+						}
+					}
+				}
+				break;
+			}
+		}
+
+		for (let y = 0; y < 4; y++) {
+			for (let x = 0; x < 4; x++) {
+				if (this.activePiece.coords.y + y >= 0 && this.activePiece.cells[y][x] != 0x0) {
+					cells[this.activePiece.coords.y + y][this.activePiece.coords.x + x] = this.activePiece.cells[y][x];
+				}
+			}
+		}
+
+		for (let y = 0; y < this.frozenLines; y++) {
+			cells[this.size.y - y - 1] = new Array(this.size.x).fill("frozenLine");
+		}
+		return cells;
+	}
+
+	setInvisibleMode(invisibleMode) {
+		this.invisibleMode = invisibleMode;
+	}
+
+	reset() {
+		this.cells = new Array(this.size.y);
+		for (let y = 0; y < this.size.y; y++) {
+			this.cells[y] = new Array(this.size.x).fill(0x0);
+		}
+		this.activePiece = null;
+		this.savedPiece = undefined;
+		this.gameOver = false;
+		this.piecesCopiedCount = 0;
+		this.frozenLines = 0;
+		this.removedLines = 0;
+		this.piecesList = [];
+	}
+
+	getShadowCells() {
+		let shadowCells = JSON.parse(JSON.stringify(this.cells));
+		for (let y = 0; y < this.size.y; y++) {
+			for (let x = 0; x < this.size.x; x++) {
+				if (this.cells[y][x] != 0x0) {
+					for (let z = y; z < this.size.y; z++) {
+						shadowCells[z][x] = "gameOver";
+					}
+				}
+			}
+		}
+		return shadowCells;
+	}
+
+	fillRed() {
+		for (let y = 0; y < this.size.y; y++) {
+			for (let x = 0; x < this.size.x; x++) {
+				if (this.cells[y][x] == 0x0) {
+					this.cells[y][x] = "gameOver";
+				}
+			}
+		}
+	}
 }
 
-
-
-
-
-// let bord = new BoardGame(
-//     {
-//         size: {x: 10, y : 20},
-//         plst: [new Piece(0)]
-//     }
-// );
-
-// bord.nextPiece();
-// console.log(bord.getblocks());
-//console.log("bord: ", bord);
-
-// let ps = new Piece(1);
-// bord.addpiece(ps);
-// console.log("bord: ", bord);
-
-export default BoardGame;
+export default Board;

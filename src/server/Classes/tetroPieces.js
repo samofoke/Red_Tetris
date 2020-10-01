@@ -2,88 +2,82 @@
 
 class Piece {
 
-
 	/*
-	the function generates a new piece if not found it will generate again
+	*	Generates a new piece. Rolls once for type. If same as lastPieceType,
+	*	rolls again.
 	*/
-
-	static randomPiece(last) {
-		let newpiece = Math.floor(Math.random() * (Piece.differentShapes));
-		if (newpiece === last) {
-			newpiece = Math.floor(Math.random() * (Piece.differentShapes))
+	static generateRandomPiece(lastPieceType) {
+		let newType = Math.floor(Math.random() * (Piece.typeCount));
+		if (newType === lastPieceType) {
+			newType = Math.floor(Math.random() * (Piece.typeCount));
 		}
-		return new Piece({shapenbr: newpiece});
+		return new Piece({type: newType});
 	}
 
 	/*
-	the function generates and reaturns a number of pieces
+	*	Generates and returns a list of num pieces.
 	*/
-	static randomNumberPieces(nbr) {
-		if (!nbr) {
-			nbr = 1;
+	static generateRandomPieces(num) {
+		if (!num) num = 1;
+		let pieces = [];
+		for (let i = 0; i < num; i++) {
+			let lastPieceType = null;
+			if (pieces.length > 0)
+				lastPieceType = pieces[pieces.length - 1].type;
+			pieces.push( Piece.generateRandomPiece(lastPieceType) );
 		}
-		let pcs = [];
-		for (let index = 0; index < nbr; index++) {
-			let lst = null;
-			if (pcs.length > 0) {
-				lst = pcs[pcs.length - 1].shapenbr;
-			}
-			pcs.push(Piece.randomPiece(lst));
-		}
-		return pcs;
+		return pieces;
 	}
 
-	constructor(len) {
-		if (len instanceof Piece) {
-			console.log("[tetroPieces.js] piece constructor copy");
-			console.log("old: ", len);
-			len = {
-				shapenbr: len.shapenbr,
-				act: len.act,
-				crd: {...len.crd}
+	/*
+	*	param is either an instance of Piece or an Integer between 0 and 7
+	*/
+	constructor( params ) {
+		if (params instanceof Piece) {
+			// Copy constructor
+			params = {
+				type: params.type,
+				orientation: params.orientation,
+				coords: { ...params.coords }
 			};
 		}
-		//constructor with len
-		console.log("[tetroPieces.js] piece constructor with len");
-		let defaultLen = {
-			shapenbr: 0,
-			act: 0,
-			crd: {x: 3, y: 0}
+		// Constructor with params
+		let defaultParams = {
+			type: 0,
+			orientation: 0,
+			coords: {x: 3, y: 0}
 		};
-		len = {...defaultLen, ...len, crd: {...(len.crd ? len.crd : defaultLen.crd)}};
+		params = {...defaultParams, ...params, coords: {...(params && params.coords ? params.coords : defaultParams.coords)}};
 
-		if (len.shapenbr < 0 || len.shapenbr >= Piece.differentShapes) {
-			console.log("[tetroPieces.js] invalid piece len");
+	 	if (params.type < 0 || params.type >= Piece.typeCount) {
 			return null;
 		}
-		this.shapenbr = len.shapenbr;
-		this.act = len.act;
-		this.cs = Piece.sevenShapes[this.shapenbr][this.act];
-		this.crd = len.crd;
+		this.type = params.type;
+		this.orientation = params.orientation;
+		this.cells = Piece.types[this.type][this.orientation];
+		this.coords = params.coords;
 	}
+
+	/*
+	*	Tetris rotation rules:
+	*/
 
 	rotate() {
-		this.act = (this.act + 1) % 4;
-		console.log("[tetroPieces.js] new action: ", this.act);
-		this.cs = Piece.sevenShapes[this.shapenbr][this.act]
+		this.orientation = (this.orientation + 1) % 4;
+		this.cells = Piece.types[this.type][this.orientation];
 	}
 
-	updateCordinates(v) {
-		console.log("[tetroPieces.js] move. v: ", v);
-		if (!Number.isInteger(v.x) || !Number.isInteger(v.y)) {
-			console.log(" invalid move");
-			return;
+	move( vector = {x: 0, y : 1} ) {
+		if (!Number.isInteger(vector.x) || !Number.isInteger(vector.y)){
+			return ;
 		}
-		this.crd.x += v.x;
-		this.crd.x += v.x;
-		console.log("piece moved: ", this.crd);
+		this.coords.x += vector.x;
+		this.coords.y += vector.y;
 	}
-
-
 }
 
-Piece.differentShapes = 7;
-Piece.sevenShapes = [
+Piece.typeCount = 7;
+Piece.types = [
 	// cyan line
 	[
 		[
