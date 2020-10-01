@@ -15,10 +15,10 @@
 .playerForm input[type="button"] {
 	width: 40%;
 	align-self: center;
-	color: lightgrey;
-	border: 0;
+	color: rgb(0, 0, 0);
+	border: 5px;
 	padding: 13px;
-	margin: 20px;
+	margin: 30px;
 	font-size: 1rem;
 	outline-offset: -8px;
 	width: 10%;
@@ -40,7 +40,7 @@ input[type="text"] {
 	outline: 0;
 	background: #ffffff;
 	color: grey;
-	outline: 4px inset #000000;
+	outline: 2px inset #000000;
 	outline-offset: 0px;
 	font-weight: bold;
 	margin-top: 10px;

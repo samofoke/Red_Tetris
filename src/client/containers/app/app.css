@@ -21,10 +21,6 @@ input[value='i'] {
 	right: 20px;
 }
 
-.instructions {
-	border: 1px solid blue;
-}
-
 .error {
 	display: flex;
 	justify-content: center;

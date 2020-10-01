@@ -1,18 +1,14 @@
 .button {
 	align-self: center;
-	/* background: #C62828; */
-	color: lightgrey;
-	border: 0;
+	color: rgb(0, 0, 0);
+	border: 2px;
 	outline-offset: -8px;
 	padding: 18px;
 	margin: 20px;
 	font-size: 1rem;
-	/* outline: 8px outset #EF5350; */
 	cursor: pointer;
 }
 
 .button:active {
-	/* outline: 8px inset #EF5350; */
-	/* background: #B71C1C; */
-	color: #B0BEC5;
+	color: #000000;
 }
