@@ -1,194 +1,110 @@
 import fs  from 'fs';
 import debug from 'debug';
 import Server from './Classes/server';
-import Player from './Classes/Player';
+//import Player from './Classes/Player';
 import * as ActionNames from './ActionsOntherServer';
 import * as ServerActions from '../client/actions/server';
-import { updatePlayerList } from '../client/actions/client.server';
+//import { updatePlayerList } from '../client/actions/client.server';
 //import { server } from '../../params';
 
 
-const server = new Server();
-
-const logerror = debug('tetris:error')
-  , loginfo = debug('tetris:info')
+const logerror = debug('tetris:error'), loginfo = debug('tetris:info')
 
 const initApp = (app, params, cb) => {
-  const {host, port} = params
-  const handler = (req, res) => {
-    const file = req.url === '/bundle.js' ? '/../../build/bundle.js' : '/../../index.html'
-    fs.readFile(__dirname + file, (err, data) => {
-      if (err) {
-        logerror(err)
-        res.writeHead(500)
-        return res.end('Error loading index.html')
-      }
-      res.writeHead(200)
-      res.end(data)
-    })
-  }
 
-  app.on('request', handler)
+	const {host, port} = params
+	const handler = (req, res) => {
+		let file = '';
+		switch (req.url) {
+			case '/public/index.css':
+				file = __dirname + '/../../public/index.css';
+				break;
+			default:
+				file = __dirname + (req.url === '/bundle.js' ? '/../../build/bundle.js' : '/../../index.html');
+		}
+		fs.readFile(file, (err, data) => {
+			if (err) {
+				logerror(err)
+				res.writeHead(500)
+				return res.end('Error loading resource')
+			}
+			res.writeHead(200)
+			res.end(data)
+		})
+	}
 
-  app.listen({host, port}, () =>{
-    loginfo(`tetris listen on ${params.url}`)
-    cb()
-  })
+	app.on('request', handler)
+
+	app.listen({host, port}, () => {
+		loginfo(`tetris listen on ${params.url}`)
+		cb()
+	})
 }
+
+export const server = new Server();
 
 const initEngine = io => {
+	server.io = io;
+	io.on(ActionNames.CONNECTION, function(socket) {
+		server.sendBestScore(socket);
 
-  const updatesAllPlayerList = () => {
-    io.to('lobby').emit(ActionNames.SERVER_INFORMATION, forOpenConnection());
-  }
+		socket.on(ServerActions.SERVER_UPDATE_REQUEST_URL, (data) => {
+			server.onURLJoin(socket, data);
+		})
 
-  //sending the game state
-  const updateState = (player) => {
-    console.log("[index.js] updating the game state.");
-    let socket = server.sockets.get(player.playerID);
-    socket.emit(ActionNames.UPDATE_STATE, player.bord.getblocks())
-  }
+		/*
+		*	Emitted when client updates name in GUI
+		*/
+		socket.on(ServerActions.SERVER_ADD_NEW_PLAYER_TO_LOBBY, (playerName) => {
+			server.addNewPlayerToLobby(socket, playerName);
+		})
 
-  const shadowUpdate = () => {
+		socket.on(ServerActions.SERVER_JOIN_GAME, (gameID) => {
+			server.joinGame(socket, gameID);
+		})
 
-  }
+		socket.on(ServerActions.SERVER_CREATE_GAME, () => {
+			server.createGame(socket);
+		})
 
+		socket.on(ServerActions.SERVER_START_GAME, () => {
+			server.startGame(socket);
+		})
 
-  io.on(ActionNames.CONNECTION, function(socket){
+		socket.on(ServerActions.SERVER_GAME_ACTION, (action) => {
+			server.playerAction(socket, action);
+		})
 
-    //socket.join('lobby');
-    console.log("[server/index.js]",ActionNames.CONNECTION);
+		socket.on(ActionNames.DISCONNECT, () => {
+			server.playerDisconnect(socket);
+		})
 
-    loginfo("Socket connected: " + socket.id)
-    server.sockets.set(socket.id, socket);
-    //setting up server connections for the player.
-    //let serverInformation = server.forOpenConnection();
-    //console.log("Server Information: ");
-    //console.dir(serverInformation);
-    //socket.emit('serverInformation', serverInformation);
-    //io.to('lobby').emit('serverInformation', serverInformation);
-    
+		socket.on(ServerActions.SERVER_QUIT_GAME, () => {
+			let playerName = server.players.get(socket.id).name;
+			server.playerDisconnect(socket)
+				.then(() => server.addNewPlayerToLobby(socket, playerName));
+		})
 
-    /*
-    emit when clients updates the user interface.
-    */
-    socket.on(ActionNames.NEW_PLAYER, (ply) => {
-      console.log("[server/index.js]","Add the player: ", ply, "to the lobby.");
-      let p = new Player(ply, socket.id);
-      server.stanbyPlayer.set(socket.id, p);
-      socket.join('lobby');
-      //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
-      updatePlayerList();
-      //server.forSelectingGame(p, action.playerID);
-      // if (action.playerID != undefined) {
-      //   server.forSelectingGame(p, action.playerID);
-      // }else {
-      //   server.createNewGame(p);
-      // }
-
-      // let serverInformation = server.forOpenConnection();
-      // io.to('lobby').emit('serverInformation', serverInformation);
-    })
-    socket.on(ActionNames.JOIN_GAME, (plyID) => {
-      console.log("[server/index.js]",ActionNames.JOIN_GAME, plyID);
-      //let p = new Player(action.pName, socket.id);
-      // if (action.playerID != undefined) {
-      //   server.forSelectingGame(p, action.playerID);
-      // }else {
-      //   server.createNewGame(p);
-      // }
-
-      //move player to player list.
-      let p = server.stanbyPlayer.get(socket.id);
-      console.log("got plyer: ", p);
-      server.forSelectingGame(p, plyID);
-      server.stanbyPlayer.delete(socket.id);
-      //let serverInformation = server.forOpenConnection();
-      //console.log("joined game: ", serverInformation);
-      //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
-      socket.leave('lobby');
-      socket.join(plyID);
-      updatesAllPlayerList();
-
-      //emit the event to ALL the connected clients
-      socket.emit(ActionNames.GAME_JOINED);
-    })
-
-    socket.on(ActionNames.CREATE_GAME, () => {
-      console.log(ActionNames.CREATE_GAME);
-
-      let p = server.stanbyPlayer.get(socket.id);
-
-      //create a new game
-      let game = server.createNewGame(p);
-
-      //remove a player from the standby
-      server.stanbyPlayer.delete(socket.id);
-      //let serverInformation = server.forOpenConnection();
-      //io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
-      socket.join(game.id);
-      updatesAllPlayerList();
-
-      //emit the event to ALL the connected clients
-      socket.emit(ActionNames.GAME_JOINED, true);
-      updateState(p);
-    })
-
-    // socket.on('action', (action) => {
-
-    //   console.log(action);
-    //   console.log(action.type);
-    //   if(action.type === 'server/ping'){
-    //     socket.emit('action', {type: 'pong'})
-    //   }
-    // })
-    socket.on(ActionNames.DISCONNECT, function() {
-      console.log("[server/index.js]",ActionNames.DISCONNECT,socket.id);
-      let i = {};
-      server.games.find(g => {
-        let ply = g.players.find(p => p.playerID === socket.id);
-        if (ply !== undefined) {
-          i = {ply, g};
-          return true;
-        }
-      })
-      console.log(i);
-      if (i.ply !== undefined) {
-        server.removePlayer(i.ply, i.g);
-        let serverInformation = server.forOpenConnection();
-        io.to('lobby').emit(ActionNames.SERVER_INFORMATION, serverInformation);
-      }
-    })
-
-    socket.on('action', (action) => {
-
-      console.log(action);
-      console.log(action.type);
-      if(action.type === 'server/ping'){
-        console.log("the socket is responding...");
-        socket.emit('action', {type: 'pong'})
-      }
-    })
-  })
+	})
 }
 
-export function create(params){
-  const promise = new Promise( (resolve, reject) => {
-    const app = require('http').createServer()
-    initApp(app, params, () =>{
-      const io = require('socket.io')(app)
-      const stop = (cb) => {
-        io.close()
-        app.close( () => {
-          app.unref()
-        })
-        loginfo(`Engine stopped.`)
-        cb()
-      }
+export function create(params) {
+	const promise = new Promise( (resolve, reject) => {
+		const app = require('http').createServer();
+		initApp(app, params, () => {
+			const io = require('socket.io')(app)
+			const stop = (cb) => {
+				io.close()
+				app.close( () => {
+					app.unref()
+				})
+				loginfo(`Engine stopped.`)
+				cb()
+			}
 
-      initEngine(io)
-      resolve({stop})
-    })
-  })
-  return promise
+			initEngine(io)
+			resolve({stop})
+		})
+	})
+	return promise
 }
