@@ -4,19 +4,18 @@ import ps from './form.style.css'
 
 const PlayerForm = ( props ) => {
 
+	const keyboardEvent = (event) => {
+		if (event.keyCode == 13) {
+			props.onUpdateName();
+		}
+	}
+
 	return (
-		<div className={ps.fs}>
-			<input type="text" id="inputName" />
-			<br/>
-			<input value="FUN" type="button" onClick={props.onUpdateName} />
+		<div className={ps.playerForm}>
+			<input onKeyDown={keyboardEvent} type="text" id="playerInputName" placeholder="Enter your username" />
+			<input id="buttonPlayerInputName" value="Play" type="button" onClick={props.onUpdateName} />
 		</div>
 	)
-}
-
-const mapStateToProps = (state) => {
-	return {
-		// playerlist
-	}
 }
 
 export default PlayerForm

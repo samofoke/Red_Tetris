@@ -1,24 +1,24 @@
 import React from 'react';
 import arena from './arena.css';
 
-const Gamearena = (props) => {
+const host = ( props ) => {
+	if (!props.host || props.host.id == undefined || props.host.hostName == undefined || props.host.playerCount == undefined) return null;
 
-    let arrGame = [];
-    arrGame.push(arena.g);
+	let classes = [];
+	classes.push(arena.host);
 
-    if (props.ifSelected) {
-        arrGame.push(arena.act);
-    }
+	if (props.isSelected) {
+		classes.push(arena.activeHost);
+	}
 
-    arrGame = arrGame.join(' ');
-
-    return (
-        <div className={arrGame} onClick={props.selectGame}>
-            <div>#{props.g.id}</div>
-            <div className={arena.center}>name: {props.g.playerName}</div>
-            <div>Players: {props.g.pcnt}</div>
-        </div>
-    );
+	classes = classes.join(' ');
+	return (
+		<div className={classes} onClick={props.selectGame}>
+			<div className={arena.hostID} >#{props.host.id}</div>
+			<div className={arena.name}>Name: {decodeURIComponent(props.host.hostName)}</div>
+			<div className={arena.players}>Players: {props.host.playerCount} to 4</div>
+		</div>
+	);
 }
 
-export default Gamearena;
+export default host

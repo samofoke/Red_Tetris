@@ -1,3 +1,49 @@
-.fs {
-    color: black;
+.playerForm {
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: center;
+	flex-grow: 1;
+}
+
+@media screen and (min-width: 2560px) {
+	.playerForm {
+		margin-top: 5rem;
+	}
+}
+
+.playerForm input[type="button"] {
+	width: 40%;
+	align-self: center;
+	color: lightgrey;
+	border: 0;
+	padding: 13px;
+	margin: 20px;
+	font-size: 1rem;
+	outline-offset: -8px;
+	width: 10%;
+	cursor: pointer;
+}
+
+.playerForm input[type="button"]:active {
+	outline: 8px inset #000000;
+	background: #fcfcfc;
+	color: #B0BEC5;
+}
+
+input[type="text"] {
+	font-size: 0.8rem;
+	border: 0;
+	height: 1rem;
+	padding: 10px;
+	text-align: center;
+	outline: 0;
+	background: #ffffff;
+	color: grey;
+	outline: 4px inset #000000;
+	outline-offset: 0px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 30%;
 }

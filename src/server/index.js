@@ -3,6 +3,7 @@ import debug from 'debug';
 import Server from './Classes/server';
 import Player from './Classes/Player';
 import * as ActionNames from './ActionsOntherServer';
+import * as ServerActions from '../client/actions/server';
 import { updatePlayerList } from '../client/actions/client.server';
 //import { server } from '../../params';
 

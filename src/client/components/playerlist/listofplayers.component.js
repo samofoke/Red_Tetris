@@ -1,52 +1,50 @@
 import React from 'react';
-import list from './listofplayers.style.css';
+import ply from './listofplayers.style.css';
 import Arena from './arena/arena';
-import socket from '../../socket';
+//import socket from '../../socket';
+import Button from '../button.component/button.component';
 import * as ActionNames from '../../../server/ActionsOntherServer';
 
-const playerlist = (props) => {
+const playList = ( props ) => {
 
-    let info = null;
+	let content = null;
 
-    const joinGame = () => {
-        console.log("join Game: ");
+	let button = null;
+		if (props.gameSelected != null && props.playList.find(el => el.id == props.gameSelected )) {
+			button = (
+				<Button onClick={ () => props.joinGame(props.gameSelected)} type='button'
+					value={"JOIN GAME #" + props.gameSelected}
+				/>
+			)
+		} else {
+			button = (
+				<Button onClick={props.createGame} type='button'
+					value={"CREATE GAME"}
+				/>
+			)
+		}
 
-        // socket.emit('selectGame', {
-        //     playerID: playerID,
-        //     pName: 'pName'
-        // });
-        socket.emit(ActionNames.JOIN_GAME, props.selectedGame);
-    }
 
-    const createGame = () => {
-        console.log("game created");
-        socket.emit(ActionNames.CREATE_GAME);
-    }
+	if (props.playList) {
+		content = props.playList.map( host => {
+			return <Arena
+				key={host.id}
+				host={host}
+				selectGame={() => props.onSelectGame(host.id)}
+				isSelected={host.id == props.gameSelected}
+			/>;
+		});
+	}
 
-    if (props.playerlist) {
-        info = props.playerlist.map( p => {
-            return <Arena
-                key={p.id}
-                p={p}
-                selectGame={() => props.onSelectingGame(p.id)}
-                ifSelecteed={p.id == props.selectedGame}
-                // key={player.id} 
-                // player={player} 
-                // selectGame={() => selectGame(player.id)}
-            />;
-        });
-    }
-
-    return (
-        <div className={list.plist}>
-            {info}
-            <input onClick={() => props.selectedGame != null ? joinGame({/*create a new game*/}) : createGame()} type='button'
-            value={props.selectedGame != null ? "JOIN GAME #" + props.selectedGame : "CREATE GAME" }
-            />
-            
-        </div>
-    );
+	return (
+		<div className={ply.playList}>
+			<div className={ply.list}>
+				{content}
+			</div>
+			{button}
+		</div>
+	)
 }
 
-export default playerlist;
+export default playList;
 

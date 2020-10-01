@@ -1,15 +1,21 @@
-.bord {
-    border: black solid 2px;
+.Board {
+	border: black solid 4px;
+    height: fit-content;
+	display: table;
 }
 
-.rw {
-    display: flex;
+.row {
+	display: flex;
 }
 
-.blks {
-    width: 5vw;
-    height: 5vh;
-    border: solid 1px #aeaeae;
+.cell {
+	width: calc(calc(4vh + 1vw)/2);
+	height: calc(calc(4vh + 1vw)/2);
+	border: 1px solid rgb(224, 224, 224);
+	outline-offset: -8px;
+	color: unset;
+	outline: 8px outset;
+	outline-color: rgba(0, 0, 0, 0);
 }
 
 .l1 {
@@ -38,4 +44,20 @@
 
 .l7 {
     background: red;
+}
+
+.gameOver {
+	background: #eeeded;
+}
+
+.frozenLine {
+	background: #3D3D3D;
+}
+
+.previewPiece {
+	background: #dadada;
+}
+
+.previewPiece + .previewPiece {
+	border-left: 0;
 }

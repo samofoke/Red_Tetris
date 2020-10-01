@@ -1,6 +1,14 @@
-.plist {
-    max-width: 400px;
-    min-width: 200px;
-    display: flex;
-    flex-direction: column;
+.playList {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 5rem;
+	max-height: 75%;
+}
+.list {
+	overflow-y: auto;
+}
+@media screen and (min-width: 2560px) {
+	.playList {
+		margin-bottom: 15rem;
+	}
 }

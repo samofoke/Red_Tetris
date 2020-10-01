@@ -1,16 +1,38 @@
-.g {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+.host {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	border: #000000 solid 2px;
+	padding: 8px;
+	cursor: pointer;
+	margin: 5px;
 }
 
-.g .center {
-    width: 50%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.host * {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
-.act {
-    color: black;
+.host .name {
+	width: 30%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.activeHost {
+	color: rgb(0, 0, 0);
+	background: #ffffff;
+}
+
+.host .hostID {
+	margin-right: 50px;
+}
+
+.host .players {
+	margin-left: 50px;
 }

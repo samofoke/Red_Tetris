@@ -1,16 +1,16 @@
 import React from 'react';
 //import socket from '../../socket';
-import button from './button.style.css';
+import st from './button.style.css';
 
-const Button = (props) => {
-    return (
-        <button
-            className={button.tetro}
+const Button = ( props ) => {
+	return (
+        <input 
+            type="button"
+            className={st.button}
             onClick={props.onClick}
-        >
-        BUTTON
-        </button>
-    );
+            value={props.value}
+        />
+	);
 }
 
 export default Button;
