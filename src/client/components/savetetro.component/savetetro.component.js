@@ -1,11 +1,11 @@
 import React from 'react'
 import styles from './savetetro.style.css';
-import cellStyles from '../../Board.component/Board.style.css';
+import tetrocolors from '../tetrocolors/tetrocolor.style.css';
 
 const savedPiece = ( props ) => {
 
 	let cellClasses = [];
-	cellClasses.push(cellStyles.cell);
+	cellClasses.push(tetrocolors.cell);
 
 	let cellContent = null;
 	let rowContent = [];
@@ -16,7 +16,7 @@ const savedPiece = ( props ) => {
 			let classes = [...cellClasses];
 
 			if (props.piece && props.piece.cells && props.piece.cells[y] && props.piece.cells[y][x]) {
-				classes.push(cellStyles[props.piece.cells[y][x]]);
+				classes.push(tetrocolors[props.piece.cells[y][x]]);
 			}
 			classes = classes.join(' ');
 			cellContent.push(<div key={(x + 1) * (y + 1)} className={classes}></div>);

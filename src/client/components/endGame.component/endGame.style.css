@@ -1,0 +1,42 @@
+.endGameLeaderBoard {
+	position: fixed;
+	background: #ffffff;
+	top: 50vh;
+	width: 40vw;
+	border: solid 4px #000000;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	min-width: 500px;
+	padding: 20px 0px;
+	transform: translateX(-50%);
+	left: 50%;
+}
+
+.scoreRanking {
+	display: flex;
+	flex-direction: column;
+	width: 70%;
+}
+
+.scoreRanking > h3 {
+	text-align: center;
+}
+
+.rankPosition {
+	display: flex;
+	flex-direction: row;
+}
+
+.rankPosition span {
+	flex-grow: 1;
+	flex-basis: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.rankPosition span:last-child {
+	text-align: right;
+}

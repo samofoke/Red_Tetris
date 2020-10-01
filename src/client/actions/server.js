@@ -49,13 +49,4 @@ export const serverAddNewPlayerToLobby = (name) => {
 	}
 }
 
-export const SERVER_UPDATE_INVISIBLE_MODE = 'SERVER_UPDATE_INVISIBLE_MODE'
-
-export const serverUpdateInvisibleMode = (isInvisibleMode) => {
-	return {
-		type: SERVER_UPDATE_INVISIBLE_MODE,
-		payload: isInvisibleMode
-	}
-}
-
 export const SERVER_UPDATE_REQUEST_URL = 'SERVER_UPDATE_REQUEST_URL'

@@ -1,11 +1,11 @@
 import React from 'react'
-import styls from './shadowBoard.css'
+import styls from './shadowboard.style.css'
 
 const shadowBoard = ( props ) => {
 	let content = <div>EMPTY BOARD</div>;
 	let info = '';
 	let shadowCellClasses = [];
-	shadowCellClasses.push(styles.shadowCell);
+	shadowCellClasses.push(styls.shadowCell);
 
 	let contentArray = [];
 	if (props.shadowState) {

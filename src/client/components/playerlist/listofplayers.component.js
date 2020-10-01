@@ -5,12 +5,13 @@ import Arena from './arena/arena';
 import Button from '../button.component/button.component';
 import * as ActionNames from '../../../server/ActionsOntherServer';
 
-const playList = ( props ) => {
+const hostList = ( props ) => {
 
 	let content = null;
+	console.log("its running...");
 
 	let button = null;
-		if (props.gameSelected != null && props.playList.find(el => el.id == props.gameSelected )) {
+		if (props.gameSelected != null && props.hostList.find(el => el.id == props.gameSelected )) {
 			button = (
 				<Button onClick={ () => props.joinGame(props.gameSelected)} type='button'
 					value={"JOIN GAME #" + props.gameSelected}
@@ -25,8 +26,8 @@ const playList = ( props ) => {
 		}
 
 
-	if (props.playList) {
-		content = props.playList.map( host => {
+	if (props.hostList) {
+		content = props.hostList.map( host => {
 			return <Arena
 				key={host.id}
 				host={host}
@@ -37,7 +38,7 @@ const playList = ( props ) => {
 	}
 
 	return (
-		<div className={ply.playList}>
+		<div className={ply.hostList}>
 			<div className={ply.list}>
 				{content}
 			</div>
@@ -46,5 +47,5 @@ const playList = ( props ) => {
 	)
 }
 
-export default playList;
+export default hostList;
 

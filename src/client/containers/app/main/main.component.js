@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import styles from './mainControl.style.css';
+import styles from './main.style.css';
 import PlayerList from '../../../components/playerlist/listofplayers.component';
 import PlayerForm from '../../../components/form.component/form.component';
 import ShadowBoard from '../../../components/shadowboard.component/shadowboard.component';
 import Board from '../../../components/Board.component/Board.component';
-import GameData from '../../../components/Data/data.component/data.component';
+import GameData from '../../../components/data.component/data.component';
 import Button from '../../../components/button.component/button.component';
+import EndGameLeaderBoard from '../../../components/endGame.component/endGame.component';
 //import socket from '../../../socket';
 import { updatePlayerName, updateSelectedGame, resetState } from '../../../actions/client.server';
 import { serverCreateGame, serverJoinGame, serverAddNewPlayerToLobby, serverStartGame, serverQuitGame } from '../../../actions/server';

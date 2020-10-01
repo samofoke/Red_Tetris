@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './gameData.css'
+import styles from './data.style.css'
 import NextPieces from '../nexttetro.component/nexttetro.component';
 
 const gameData = ( props ) => {

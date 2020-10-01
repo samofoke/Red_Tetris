@@ -101,12 +101,6 @@ class Game {
 		}
 	}
 
-	setInvisibleMode(invisibleMode) {
-		this.players.forEach(player => {
-			player.board.setInvisibleMode(invisibleMode);
-		})
-	}
-
 	start () {
 		this.isPlaying = true;
 	}
