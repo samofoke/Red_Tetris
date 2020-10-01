@@ -324,7 +324,7 @@ class Server {
 	writeBestScore(playerScores) {
 		this.lock.acquire("writeHighScores", done => {
 
-			let filePath = __dirname + '/../../../bestScore';
+			let filePath = __dirname + '/../../../ScoreSheet';
 
 			let highScore = this.readBestScore( highScores => {
 				highScores.push(...playerScores);
@@ -342,7 +342,7 @@ class Server {
 
 	readBestScore(cb) {
 
-		let filePath = __dirname + '/../../../bestScore';
+		let filePath = __dirname + '/../../../ScoreSheet';
 		fs.readFile(filePath, (err, data) => {
 			let highScores = null;
 			try {
