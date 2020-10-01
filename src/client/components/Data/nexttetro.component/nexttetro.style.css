@@ -1,0 +1,13 @@
+.nextPieces {
+	display: flex;
+	flex-direction: column;
+}
+
+.row {
+	display: flex;
+}
+
+.piece {
+	display: flex;
+	margin: 1px 0;
+}

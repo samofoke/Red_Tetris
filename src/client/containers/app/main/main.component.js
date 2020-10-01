@@ -1,67 +1,145 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import con from './mainControl.style.css';
-import Player from '../../../components/playerlist/listofplayers.component';
-import Form from '../../../components/form.component/form.component';
-import BdGame from '../../../components/Board.component/Board.component';
-import socket from '../../../socket';
-import { updatePlayer, updateGameSelected, updateJoinGame } from '../../../actions/client.server';
+import styles from './mainControl.style.css';
+import PlayerList from '../../../components/playerlist/listofplayers.component';
+import PlayerForm from '../../../components/form.component/form.component';
+import ShadowBoard from '../../../components/shadowboard.component/shadowboard.component';
+import Board from '../../../components/Board.component/Board.component';
+import GameData from '../../../components/Data/data.component/data.component';
+import Button from '../../../components/button.component/button.component';
+//import socket from '../../../socket';
+import { updatePlayerName, updateSelectedGame, resetState } from '../../../actions/client.server';
+import { serverCreateGame, serverJoinGame, serverAddNewPlayerToLobby, serverStartGame, serverQuitGame } from '../../../actions/server';
 
 
-const mainFunction = (props) => {
+const Main = ( props ) => {
+	const startGame = () => {
+		props.serverStartGame();
+	}
 
-    const test = (event) => {
-        console.log("==================", event);
-    }
+	const quitGame = () => {
+		props.serverQuitGame();
+		props.resetState({playerName: props.playerName});
+		window.history.pushState(null, '', '/');
+	}
 
-    let conn;
+	const updateName = () => {
+		let name = document.getElementById('playerInputName').value;
 
-    if (props.pName === undefined || props.pName.length == 0) {
-        conn = (<Form onUpdateName={() => props.onUpdatePlayer} ></Form>)
-    }
+		if (name != undefined && name.length > 0) {
+			props.serverAddNewPlayerToLobby(name);
+			props.onUpdatePlayerName(name);
+		}
+	}
 
-    console.log("joinedgame", props.joinedgame);
+	let buttons = null;
+	let content = null;
 
-    if (props.joinedgame) {
-        conn = (
-            // <div>
-            //     <BdGame gameState={props.gameState}/>
-            // </div>
-            <BdGame gameState={props.gameState}/>
-        )
-    }
-    else {
-        conn = (
-            <Player>
-                playerlist={props.playerlist}
-                selectedGame={props.selectedGame}
-                onslecetGame={props.onselectedGame}
-            </Player>
-        );
-    }
-    return (
-        <div className={con.control}>
-            {conn}
-        </div>
-    );
+	if (props.playerName === undefined || props.playerName.length == 0) {
+		content = (
+			<div className={styles.playerFormContainer}>
+				<PlayerForm onUpdateName={updateName}></PlayerForm>
+			</div>
+		);
+	}
+	else {
+		let startButton = null;
+		if (props.isHost) {
+			if (!props.gameStart) {
+				startButton = <Button onClick={startGame} value="Start Game"/>;
+			}
+		}
+		if (props.gameJoined) {
+			buttons = (
+				<div className={styles.buttons}>
+					<div>
+						{startButton}
+						<Button id="quitGameButton" onClick={quitGame} value="Quit Game"/>
+					</div>
+				</div>
+			);
+		}
+
+		let endGameContent = null;
+		if (props.endGame) {
+			endGameContent = <EndGameLeaderBoard
+				uuid={props.playerUUID}
+				isWinnerByScore={props.isWinnerByScore}
+				isWinner={props.isWinner}
+				playersInfo={props.shadowState}
+				playersLostList={props.playersLostList}
+			/>
+		}
+
+		if (props.gameJoined) {
+			content = (
+				<div className={styles.gameArea}>
+					<div className={styles.shadowBoard}>
+						<ShadowBoard playerUUID={props.playerUUID} shadowState={props.shadowState}/>
+					</div>
+					<div className={styles.boardWrapper}>
+						<Board gameState={props.gameState}/>
+						{endGameContent}
+					</div>
+					<div>
+						<GameData gameData={props.gameState}/>
+					</div>
+				</div>
+			)
+		}
+		else {
+			content = (
+				<PlayerList
+					hostList={props.hostList}
+					gameSelected={props.gameSelected}
+					onSelectGame={props.onSelectGame}
+					createGame={props.serverCreateGame}
+					joinGame={props.serverJoinGame}>
+				</PlayerList>
+			);
+		}
+	}
+	return (
+		<div className={styles.main}>
+			{content}
+			{buttons}
+		</div>
+	)
 }
 
 const mapStateToProps = (state) => {
-    return {
-        playerlist: state.playerlist,
-        pName: state.pName,
-        selectedGame: state.selectedGame,
-        joinedgame: state.joinedgame,
-        gameState: state.gameState
-    }
+
+	return {
+		hostList: state.hostList,
+		playerName: state.playerName,
+		gameSelected: state.gameSelected,
+		gameJoined: state.gameJoined,
+		gameState: state.gameState,
+		shadowState: state.shadowState,
+		isHost: state.isHost,
+		playerUUID: state.playerUUID,
+		gameStart: state.gameStart,
+		isWinner: state.isWinner,
+		isWinnerByScore: state.isWinnerByScore,
+		endGame: state.endGame,
+		leaderBoard: state.leaderBoard,
+		playersLostList: state.playersLostList
+	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-		onUpdatePlayer: pName => dispatch(updatePlayer(pName)),
-        onSelectGame: playerID => dispatch(updateGameSelected(playerID)),
-        onUpdateName: gjoined => dispatch(updateJoinGame(gjoined))
+		serverAddNewPlayerToLobby: name => dispatch(serverAddNewPlayerToLobby(name)),
+		serverStartGame: () => dispatch(serverStartGame()),
+		serverQuitGame: () => dispatch(serverQuitGame()),
+
+		onUpdatePlayerName: playerName => dispatch(updatePlayerName(playerName)),
+		onSelectGame: hostID => dispatch(updateSelectedGame(hostID)),
+		onUpdateGameJoined: gameJoined => dispatch(onUpdateGameJoined(gameJoined)),
+		resetState: action => dispatch(resetState(action)),
+		serverCreateGame: () => dispatch(serverCreateGame()),
+		serverJoinGame: gameSelected => dispatch(serverJoinGame(gameSelected))
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(mainFunction);
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
